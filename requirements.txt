@@ -1,0 +1,29 @@
+# Cloud Security Analysis Framework Requirements
+# Python SDKs & CLI wrappers for multi-cloud security configuration extraction
+
+# General Utilities & Data Formatting
+pyyaml>=6.0.1
+rich>=13.7.0
+
+# Google Cloud Platform (GCP)
+google-cloud-resourcemanager>=1.12.0
+google-cloud-iam>=2.14.0
+google-cloud-storage>=2.16.0
+google-cloud-asset>=3.18.0
+google-cloud-securitycenter>=1.27.0
+google-auth>=2.29.0
+
+# Amazon Web Services (AWS)
+boto3>=1.34.0
+botocore>=1.34.0
+
+# Microsoft Azure
+azure-identity>=1.16.0
+azure-mgmt-resource>=23.1.0
+azure-mgmt-network>=25.0.0
+azure-mgmt-storage>=21.1.0
+azure-mgmt-keyvault>=10.3.0
+azure-mgmt-security>=5.0.0
+
+# Oracle Cloud Infrastructure (OCI)
+oci>=2.125.0
