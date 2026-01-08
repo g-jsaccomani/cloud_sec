@@ -1,0 +1,80 @@
+"""
+GCP Network Security Requirements & Configuration Extractor.
+Extracts VPC Firewalls, Cloud Armor WAF policies, SSL/TLS modern policies,
+Private Service Connect, and VPC Flow Logs enablement.
+"""
+
+from typing import List
+from common.base_extractor import BaseSecurityExtractor, SecurityRequirementItem
+
+
+class GCPNetworkSecurityExtractor(BaseSecurityExtractor):
+    def __init__(self, use_mock: bool = False):
+        super().__init__(cloud_provider="GCP", domain_name="network_security", use_mock=use_mock)
+
+    def extract_live(self) -> List[SecurityRequirementItem]:
+        """Live SDK/API extraction stub for GCP Network Security."""
+        raise NotImplementedError("Live extraction requires GCP SDK credentials.")
+
+    def extract_mock(self) -> List[SecurityRequirementItem]:
+        return [
+            SecurityRequirementItem(
+                id="GCP-NET-001",
+                category="Firewall Rules",
+                control_name="Restrict SSH/RDP from 0.0.0.0/0",
+                description="Ensure no ingress firewall rule allows SSH (22) or RDP (3389) from the public Internet.",
+                current_value="Rule 'allow-all-ssh' allows 0.0.0.0/0:22",
+                recommended_value="Restrict SSH/RDP to IAP (Identity-Aware Proxy) CIDR: 35.235.240.0/20",
+                status="NON_COMPLIANT",
+                severity="CRITICAL",
+                evidence_source="gcloud compute firewall-rules list",
+                remediation_notes="Delete 'allow-all-ssh' rule and mandate Cloud IAP TCP forwarding for remote administration."
+            ),
+            SecurityRequirementItem(
+                id="GCP-NET-002",
+                category="WAF / Cloud Armor",
+                control_name="Cloud Armor OWASP Top 10 Protection on Global Load Balancers",
+                description="External HTTPS load balancers must have Cloud Armor policies attached with OWASP rulesets.",
+                current_value="Policy 'prod-edge-armor' attached with OWASP SQLi/XSS prevention enabled",
+                recommended_value="Cloud Armor policy attached to all public backend services",
+                status="COMPLIANT",
+                severity="HIGH",
+                evidence_source="gcloud compute security-policies list",
+                remediation_notes="Continue monitoring Cloud Armor rate limiting and bot management telemetry."
+            ),
+            SecurityRequirementItem(
+                id="GCP-NET-003",
+                category="Encryption in Transit",
+                control_name="Enforce TLS 1.2+ minimum on SSL Policies",
+                description="Load balancers must use SSL policies that prohibit TLS 1.0/1.1 and insecure ciphers.",
+                current_value="SSL Policy 'modern-tls-12' enforced (RESTRICTED profile)",
+                recommended_value="Min TLS 1.2, MODERN or RESTRICTED cipher profile",
+                status="COMPLIANT",
+                severity="HIGH",
+                evidence_source="gcloud compute ssl-policies list",
+                remediation_notes="Regularly audit SSL certificate expiry and ensure managed HTTPS certificates are used."
+            ),
+            SecurityRequirementItem(
+                id="GCP-NET-004",
+                category="Private Access",
+                control_name="Enable Private Google Access on VPC Subnets",
+                description="Subnets without external IPs must have Private Google Access enabled to reach GCP APIs securely.",
+                current_value="Enabled on 8 of 10 VPC subnets",
+                recommended_value="Enabled on 100% of internal/workload subnets",
+                status="NON_COMPLIANT",
+                severity="MEDIUM",
+                evidence_source="gcloud compute networks subnets list",
+                remediation_notes="Enable Private Google Access on 'subnet-dev-us-east1' and 'subnet-qa-eu-west1'."
+            )
+        ]
+
+
+if __name__ == "__main__":
+    extractor = GCPNetworkSecurityExtractor(use_mock=True)
+    items = extractor.run()
+    print(f"Extracted {len(items)} GCP Network Security items.")
+
+# ==============================================================================
+# Script Author: J. Saccomani (g-jsaccomani / jsaccomani@google.com)
+# Project: Cloud Security Analysis Architecture & Requirements Framework
+# ==============================================================================

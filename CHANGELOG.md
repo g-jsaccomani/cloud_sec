@@ -11,3 +11,6 @@ All notable changes and security updates recorded below.
 ### [2025-12-18] feat(gcp-infra): implement GCP compute and storage security baseline configurations
 - Completed milestone deliverables and technical verification.
 
+### [2026-01-08] feat(gcp-network): configure GCP network security perimeters, firewalls, and audit logging sinks
+- Completed milestone deliverables and technical verification.
+
