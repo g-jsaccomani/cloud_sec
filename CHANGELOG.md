@@ -14,3 +14,6 @@ All notable changes and security updates recorded below.
 ### [2026-01-08] feat(gcp-network): configure GCP network security perimeters, firewalls, and audit logging sinks
 - Completed milestone deliverables and technical verification.
 
+### [2026-01-27] feat(gcp-appsec): implement GCP application and AI security posture guardrails
+- Completed milestone deliverables and technical verification.
+
