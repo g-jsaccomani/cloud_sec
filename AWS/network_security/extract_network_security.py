@@ -1,0 +1,79 @@
+"""
+AWS Network Security Requirements & Configuration Extractor.
+Extracts VPC Security Group ingress rules, AWS WAFv2 Web ACL policies,
+VPC Flow Logs enablement, and Transit Gateway routing isolation.
+"""
+
+from typing import List
+from common.base_extractor import BaseSecurityExtractor, SecurityRequirementItem
+
+
+class AWSNetworkSecurityExtractor(BaseSecurityExtractor):
+    def __init__(self, use_mock: bool = False):
+        super().__init__(cloud_provider="AWS", domain_name="network_security", use_mock=use_mock)
+
+    def extract_live(self) -> List[SecurityRequirementItem]:
+        raise NotImplementedError("Live extraction requires AWS boto3 / CLI credentials.")
+
+    def extract_mock(self) -> List[SecurityRequirementItem]:
+        return [
+            SecurityRequirementItem(
+                id="AWS-NET-001",
+                category="Security Groups",
+                control_name="Prohibit Unrestricted SSH (22) and RDP (3389) in Security Groups",
+                description="Security groups must not allow ingress from 0.0.0.0/0 to ports 22 or 3389.",
+                current_value="Security Group 'sg-01a2b3c' allows 0.0.0.0/0 on port 22",
+                recommended_value="No security groups allow 0.0.0.0/0 on SSH/RDP",
+                status="NON_COMPLIANT",
+                severity="CRITICAL",
+                evidence_source="aws ec2 describe-security-groups",
+                remediation_notes="Revoke 0.0.0.0/0 ingress rule on 'sg-01a2b3c' and use AWS Systems Manager Session Manager."
+            ),
+            SecurityRequirementItem(
+                id="AWS-NET-002",
+                category="Web Application Firewall",
+                control_name="Attach AWS WAFv2 Web ACL to CloudFront & ALB Endpoints",
+                description="Public CloudFront distributions and Application Load Balancers must be protected by AWS WAFv2 with managed rules.",
+                current_value="Web ACL 'prod-waf-acl' attached with AWSManagedRulesCommonRuleSet",
+                recommended_value="WAFv2 Web ACL attached to 100% of public endpoints",
+                status="COMPLIANT",
+                severity="HIGH",
+                evidence_source="aws wafv2 list-web-acls",
+                remediation_notes="Regularly test WAF rules against OWASP Top 10 automated scanners."
+            ),
+            SecurityRequirementItem(
+                id="AWS-NET-003",
+                category="VPC Flow Logs",
+                control_name="Enable VPC Flow Logs to CloudWatch / S3",
+                description="VPC Flow Logs must be enabled for all VPCs to capture IP traffic to/from network interfaces.",
+                current_value="Enabled on 5 of 6 VPCs; missing on 'vpc-legacy-test'",
+                recommended_value="100% VPC Flow Log enablement with 10-minute max aggregation interval",
+                status="NON_COMPLIANT",
+                severity="MEDIUM",
+                evidence_source="aws ec2 describe-flow-logs",
+                remediation_notes="Create flow log destination to S3 security archive bucket for 'vpc-legacy-test'."
+            ),
+            SecurityRequirementItem(
+                id="AWS-NET-004",
+                category="Network Routing",
+                control_name="Enforce Default Deny on VPC Network Access Control Lists (NACLs)",
+                description="Custom NACLs must be configured to block known malicious IP blocks and prevent asymmetric routing bypass.",
+                current_value="Default allow-all NACLs in use across VPCs",
+                recommended_value="Hardened subnet NACLs with explicit deny rules for high-risk ports",
+                status="MANUAL_REVIEW",
+                severity="LOW",
+                evidence_source="aws ec2 describe-network-acls",
+                remediation_notes="Review subnet boundaries and implement defense-in-depth NACL rules."
+            )
+        ]
+
+
+if __name__ == "__main__":
+    extractor = AWSNetworkSecurityExtractor(use_mock=True)
+    items = extractor.run()
+    print(f"Extracted {len(items)} AWS Network Security items.")
+
+# ==============================================================================
+# Script Author: J. Saccomani (g-jsaccomani / jsaccomani@google.com)
+# Project: Cloud Security Analysis Architecture & Requirements Framework
+# ==============================================================================
