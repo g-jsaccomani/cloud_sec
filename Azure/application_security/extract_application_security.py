@@ -1,0 +1,79 @@
+"""
+Azure Application & API Security Requirements Extractor.
+Extracts Azure API Management OAuth2/OpenID authentication, Key Vault secret rotation,
+ACR container vulnerability scanning (Defender for Containers), and App Service VNet integration.
+"""
+
+from typing import List
+from common.base_extractor import BaseSecurityExtractor, SecurityRequirementItem
+
+
+class AzureApplicationSecurityExtractor(BaseSecurityExtractor):
+    def __init__(self, use_mock: bool = False):
+        super().__init__(cloud_provider="Azure", domain_name="application_security", use_mock=use_mock)
+
+    def extract_live(self) -> List[SecurityRequirementItem]:
+        raise NotImplementedError("Live extraction requires Azure CLI / SDK credentials.")
+
+    def extract_mock(self) -> List[SecurityRequirementItem]:
+        return [
+            SecurityRequirementItem(
+                id="AZURE-APP-001",
+                category="API Management",
+                control_name="Enforce OAuth2 / OpenID Connect Authorization on Azure API Management (APIM)",
+                description="APIM policies must validate OAuth2 access tokens or OpenID Connect signatures before forwarding traffic to backend APIs.",
+                current_value="100% of APIM APIs enforce 'validate-jwt' policy with Entra ID tenant validation",
+                recommended_value="Mandatory OAuth2/JWT validation policy applied at global APIM scope",
+                status="COMPLIANT",
+                severity="CRITICAL",
+                evidence_source="az apim api policy list",
+                remediation_notes="Ensure APIM rate-limit and quota-by-key policies are active."
+            ),
+            SecurityRequirementItem(
+                id="AZURE-APP-002",
+                category="Secrets Management",
+                control_name="Enforce Automated Rotation & Expiration Dates on Key Vault Secrets",
+                description="All Key Vault secrets and certificates must define an expiration date and use Azure Event Grid automation for 90-day rotation.",
+                current_value="15 secrets have expiration date; 3 secrets lack expiration date or rotation",
+                recommended_value="100% of secrets set expiration date and rotation policy",
+                status="NON_COMPLIANT",
+                severity="CRITICAL",
+                evidence_source="az keyvault secret list",
+                remediation_notes="Set expiration dates on legacy secrets in 'kv-app-core'."
+            ),
+            SecurityRequirementItem(
+                id="AZURE-APP-003",
+                category="Container Registry Security",
+                control_name="Enable Defender for Containers Vulnerability Scanning on Azure Container Registry (ACR)",
+                description="ACR registries must have Defender for Containers enabled to scan container images for vulnerabilities upon push and continuously.",
+                current_value="Defender for Containers active on 'acrprodregistry01'; 0 critical CVEs found",
+                recommended_value="Defender for Containers enabled across 100% of ACR instances",
+                status="COMPLIANT",
+                severity="HIGH",
+                evidence_source="az security pricing show --name ContainerRegistry",
+                remediation_notes="Integrate scan results into Azure DevOps build gates."
+            ),
+            SecurityRequirementItem(
+                id="AZURE-APP-004",
+                category="PaaS Network Isolation",
+                control_name="Enforce VNet Integration and Private Endpoints on Azure App Services",
+                description="App Services and Functions must enable VNet Integration for outbound traffic and disable public network access in favor of Private Endpoints.",
+                current_value="12 App Services use Private Endpoints; 2 Dev apps exposed on public IPs",
+                recommended_value="100% Private Endpoints; Public Network Access = Disabled",
+                status="NON_COMPLIANT",
+                severity="HIGH",
+                evidence_source="az webapp list",
+                remediation_notes="Configure Private Endpoints for 'app-dev-test-1' and 'app-dev-test-2'."
+            )
+        ]
+
+
+if __name__ == "__main__":
+    extractor = AzureApplicationSecurityExtractor(use_mock=True)
+    items = extractor.run()
+    print(f"Extracted {len(items)} Azure Application Security items.")
+
+# ==============================================================================
+# Script Author: J. Saccomani (g-jsaccomani / jsaccomani@google.com)
+# Project: Cloud Security Analysis Architecture & Requirements Framework
+# ==============================================================================

@@ -1,0 +1,79 @@
+"""
+Azure Foundation & Landing Zone Security Requirements Extractor.
+Extracts Azure Cloud Adoption Framework (CAF) Enterprise-Scale Management Group hierarchy,
+Virtual WAN / Hub-and-Spoke connectivity isolation, and subscription democratization guardrails.
+"""
+
+from typing import List
+from common.base_extractor import BaseSecurityExtractor, SecurityRequirementItem
+
+
+class AzureFoundationLandingZoneExtractor(BaseSecurityExtractor):
+    def __init__(self, use_mock: bool = False):
+        super().__init__(cloud_provider="Azure", domain_name="foundation_landing_zone", use_mock=use_mock)
+
+    def extract_live(self) -> List[SecurityRequirementItem]:
+        raise NotImplementedError("Live extraction requires Azure CLI / SDK credentials.")
+
+    def extract_mock(self) -> List[SecurityRequirementItem]:
+        return [
+            SecurityRequirementItem(
+                id="AZURE-LZ-001",
+                category="Management Group Architecture",
+                control_name="Enforce Azure CAF Enterprise-Scale Management Group Hierarchy",
+                description="The Azure tenant must deploy standardized Management Groups: Platform (Identity, Connectivity, Management), LandingZones (Prod, Non-Prod), and Decommissioned.",
+                current_value="Enterprise-Scale Management Group hierarchy deployed under 'mg-enterprise-root'",
+                recommended_value="Standardized CAF Enterprise-Scale hierarchy with policy inheritance",
+                status="COMPLIANT",
+                severity="CRITICAL",
+                evidence_source="az account management-group list",
+                remediation_notes="Verify no resources or subscriptions exist directly under the Root Management Group."
+            ),
+            SecurityRequirementItem(
+                id="AZURE-LZ-002",
+                category="Network Connectivity Hub",
+                control_name="Enforce Hub-and-Spoke / Azure Virtual WAN Centralized Transit Architecture",
+                description="Spoke VNets in Landing Zone subscriptions must connect to a centralized Connectivity Hub VNet/vWAN with Azure Firewall inspection.",
+                current_value="14 spoke VNets peered to 'vnet-hub-prod' with forced tunneling through Azure Firewall",
+                recommended_value="100% of spoke VNets connected to Connectivity Hub with zero direct internet egress",
+                status="COMPLIANT",
+                severity="HIGH",
+                evidence_source="az network vnet peering list",
+                remediation_notes="Audit User Defined Routes (UDRs) on spoke subnets for 0.0.0.0/0 pointing to firewall IP."
+            ),
+            SecurityRequirementItem(
+                id="AZURE-LZ-003",
+                category="Subscription Democracy",
+                control_name="Enforce Subscription Democratization via Azure Landing Zone Vendoring",
+                description="Workloads must be separated into dedicated subscriptions per application/environment to isolate blast radiuses and billing.",
+                current_value="Dedicated subscriptions provisioned for 'AppCore-Prod', 'AppCore-Dev', and 'DataLake-Prod'",
+                recommended_value="100% workload isolation via dedicated Landing Zone subscriptions",
+                status="COMPLIANT",
+                severity="HIGH",
+                evidence_source="az account list",
+                remediation_notes="Use Azure Blueprints or Bicep modules for subscription vending."
+            ),
+            SecurityRequirementItem(
+                id="AZURE-LZ-004",
+                category="Platform Operations",
+                control_name="Enforce Dedicated Management Subscription for Central Log Analytics Workspace",
+                description="Security logs and Sentinel SIEM must reside in a dedicated Management/Platform subscription with restricted Entra ID RBAC.",
+                current_value="Log Analytics workspace 'law-secops-central' isolated in 'sub-platform-management'",
+                recommended_value="Dedicated platform management subscription with least-privilege SOC access",
+                status="COMPLIANT",
+                severity="CRITICAL",
+                evidence_source="az account list --query [?name=='sub-platform-management']",
+                remediation_notes="Enforce MFA and PIM JIT for any write operations to the Management subscription."
+            )
+        ]
+
+
+if __name__ == "__main__":
+    extractor = AzureFoundationLandingZoneExtractor(use_mock=True)
+    items = extractor.run()
+    print(f"Extracted {len(items)} Azure Foundation Landing Zone items.")
+
+# ==============================================================================
+# Script Author: J. Saccomani (g-jsaccomani / jsaccomani@google.com)
+# Project: Cloud Security Analysis Architecture & Requirements Framework
+# ==============================================================================
