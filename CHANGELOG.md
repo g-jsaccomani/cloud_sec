@@ -26,3 +26,6 @@ All notable changes and security updates recorded below.
 ### [2026-03-12] feat(oci): configure Oracle Cloud Infrastructure compartment policies and Cloud Guard
 - Completed milestone deliverables and technical verification.
 
+### [2026-03-26] feat(vmware): configure hybrid VMware Cloud Foundation security posture baseline
+- Completed milestone deliverables and technical verification.
+
