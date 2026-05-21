@@ -1,0 +1,55 @@
+{
+  "cloud_provider": "AZURE",
+  "domain": "ai_security",
+  "count": 4,
+  "items": [
+    {
+      "id": "AZURE-AI-001",
+      "category": "Azure OpenAI Security",
+      "control_name": "Enforce Private Endpoints & Disable Public Network Access on Azure OpenAI",
+      "description": "Azure OpenAI instances must disable public network access (publicNetworkAccess=Disabled) and communicate exclusively via Private Endpoints.",
+      "current_value": "All 4 Azure OpenAI resources use Private Endpoints with publicNetworkAccess=Disabled",
+      "recommended_value": "100% Private Endpoints; Public Network Access = Disabled",
+      "status": "COMPLIANT",
+      "severity": "CRITICAL",
+      "evidence_source": "az cognitiveservices account list",
+      "remediation_notes": "Verify DNS integration with Private DNS Zone 'privatelink.openai.azure.com'."
+    },
+    {
+      "id": "AZURE-AI-002",
+      "category": "AI Safety & Content Filtering",
+      "control_name": "Enforce Azure AI Content Safety Filters against Prompt Injection & Jailbreaks",
+      "description": "Azure OpenAI deployments must attach an AI Content Safety filter configured to block hate speech, jailbreaks, and prompt injection attempts.",
+      "current_value": "Filter 'content-safety-strict' attached to production LLM deployments",
+      "recommended_value": "AI Content Safety filter active on all model deployments",
+      "status": "COMPLIANT",
+      "severity": "CRITICAL",
+      "evidence_source": "az cognitiveservices account deployment list",
+      "remediation_notes": "Regularly review Content Safety block logs in Log Analytics."
+    },
+    {
+      "id": "AZURE-AI-003",
+      "category": "Azure Machine Learning",
+      "control_name": "Enforce Customer Managed Key (CMK) Encryption on Azure ML Workspaces",
+      "description": "Azure Machine Learning workspaces must use Key Vault Customer Managed Keys to encrypt training metrics, datasets, and notebooks.",
+      "current_value": "CMK encryption active on workspace 'ml-prod-workspace'; Microsoft-managed key on 'ml-dev'",
+      "recommended_value": "Customer Managed Key (CMK) enforced across all ML workspaces",
+      "status": "NON_COMPLIANT",
+      "severity": "HIGH",
+      "evidence_source": "az ml workspace show",
+      "remediation_notes": "Enable Key Vault CMK encryption on 'ml-dev' workspace."
+    },
+    {
+      "id": "AZURE-AI-004",
+      "category": "Azure Machine Learning",
+      "control_name": "Enforce Managed Virtual Network Isolation for Azure ML Compute",
+      "description": "Azure Machine Learning compute instances and clusters must deploy behind a Managed Virtual Network with outbound FQDN rules.",
+      "current_value": "Managed Virtual Network = 'AllowOnlyApprovedOutbound' on 100% of ML compute",
+      "recommended_value": "Managed VNet Isolation enabled with restricted outbound rules",
+      "status": "COMPLIANT",
+      "severity": "HIGH",
+      "evidence_source": "az ml compute list",
+      "remediation_notes": "Audit custom FQDN outbound exceptions monthly."
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "cloud_provider": "AWS",
+  "domain": "compliance_governance",
+  "count": 4,
+  "items": [
+    {
+      "id": "AWS-GOV-001",
+      "category": "Service Control Policies (SCPs)",
+      "control_name": "Enforce SCP Preventing CloudTrail & GuardDuty Deactivation",
+      "description": "An Organization-level SCP must deny 'cloudtrail:StopLogging', 'cloudtrail:DeleteTrail', and 'guardduty:DisableOrganizationAdminAccount'.",
+      "current_value": "SCP 'scp-guardrails-core' attached to Root Organization OU",
+      "recommended_value": "Active guardrail SCP enforced on all member accounts",
+      "status": "COMPLIANT",
+      "severity": "CRITICAL",
+      "evidence_source": "aws organizations list-policies",
+      "remediation_notes": "Verify SCP exceptions are restricted to emergency break-glass roles."
+    },
+    {
+      "id": "AWS-GOV-002",
+      "category": "Service Control Policies (SCPs)",
+      "control_name": "Enforce SCP Restricting Permitted AWS Regions",
+      "description": "Restrict AWS region operations to authorized data residency regions (e.g., us-east-1, us-west-2).",
+      "current_value": "SCP 'scp-region-lock' enforced on Production OU",
+      "recommended_value": "Region restriction SCP active across all OUs",
+      "status": "COMPLIANT",
+      "severity": "HIGH",
+      "evidence_source": "aws organizations list-targets-for-policy",
+      "remediation_notes": "Audit global service exceptions (IAM, CloudFront, Route53)."
+    },
+    {
+      "id": "AWS-GOV-003",
+      "category": "Data Backup Governance",
+      "control_name": "Enforce Immutable AWS Backup Vault Lock",
+      "description": "Production AWS Backup vaults must have Vault Lock in Compliance mode to prevent backup deletion by ransomware.",
+      "current_value": "Vault 'prod-backup-vault' has Vault Lock active (MinRetentionDays = 30)",
+      "recommended_value": "Vault Lock Compliance Mode enabled on all primary vaults",
+      "status": "COMPLIANT",
+      "severity": "CRITICAL",
+      "evidence_source": "aws backup describe-backup-vault",
+      "remediation_notes": "Ensure disaster recovery restoration tests occur semi-annually."
+    },
+    {
+      "id": "AWS-GOV-004",
+      "category": "Patch Management",
+      "control_name": "Enforce SSM Patch Manager Compliance for EC2 & Hybrid Servers",
+      "description": "All managed nodes must report compliant against enterprise patch baseline within 7 days of release.",
+      "current_value": "92% of EC2 instances compliant with 'Enterprise-AmazonLinux-Baseline'",
+      "recommended_value": "100% patch compliance across all OS distributions",
+      "status": "NON_COMPLIANT",
+      "severity": "HIGH",
+      "evidence_source": "aws ssm list-compliance-summaries",
+      "remediation_notes": "Schedule patch maintenance window for 8 non-compliant instances."
+    }
+  ]
+}

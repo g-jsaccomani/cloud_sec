@@ -38,3 +38,6 @@ All notable changes and security updates recorded below.
 ### [2026-05-07] feat(common): build multi-cloud normalization models and assessment libraries
 - Completed milestone deliverables and technical verification.
 
+### [2026-05-21] docs(architecture): document multi-cloud landing zone reference architecture and telemetry
+- Completed milestone deliverables and technical verification.
+

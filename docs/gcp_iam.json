@@ -1,0 +1,55 @@
+{
+  "cloud_provider": "GCP",
+  "domain": "iam",
+  "count": 4,
+  "items": [
+    {
+      "id": "GCP-IAM-001",
+      "category": "Identity & Access Management",
+      "control_name": "Restrict Primitive Role Usage (roles/owner, roles/editor)",
+      "description": "Ensure primitive roles (Owner/Editor) are not assigned to standard user accounts.",
+      "current_value": "3 users assigned roles/editor, 2 users assigned roles/owner",
+      "recommended_value": "0 users on primitive roles; enforce Least Privilege RBAC",
+      "status": "NON_COMPLIANT",
+      "severity": "HIGH",
+      "evidence_source": "GCP Cloud IAM Policy Export",
+      "remediation_notes": "Migrate users from roles/editor to domain-specific roles (e.g., roles/storage.objectViewer, roles/compute.instanceAdmin)."
+    },
+    {
+      "id": "GCP-IAM-002",
+      "category": "Service Account Security",
+      "control_name": "Service Account Key Expiration & Rotation",
+      "description": "User-managed service account keys older than 90 days must be disabled and rotated.",
+      "current_value": "2 Service Account keys > 120 days old detected",
+      "recommended_value": "No user-managed keys > 90 days; prefer Workload Identity Federation",
+      "status": "NON_COMPLIANT",
+      "severity": "CRITICAL",
+      "evidence_source": "gcloud iam service-accounts keys list",
+      "remediation_notes": "Adopt GKE Workload Identity or OIDC Federation to eliminate long-lived Service Account JSON keys."
+    },
+    {
+      "id": "GCP-IAM-003",
+      "category": "Authentication & SSO",
+      "control_name": "Enforce 2SV / MFA in Cloud Identity",
+      "description": "All human administrators and users must have 2-Step Verification (MFA) enforced.",
+      "current_value": "2SV Enforced for 95% of users (2 exceptions)",
+      "recommended_value": "100% 2SV enforcement across all org units",
+      "status": "NON_COMPLIANT",
+      "severity": "CRITICAL",
+      "evidence_source": "Google Admin SDK / Cloud Security Command Center",
+      "remediation_notes": "Enable mandatory 2SV in Google Cloud Identity / Workspace admin console."
+    },
+    {
+      "id": "GCP-IAM-004",
+      "category": "Workload Federation",
+      "control_name": "Workload Identity Federation for External CI/CD",
+      "description": "Use Workload Identity Federation instead of static JSON keys for GitHub Actions / GitLab CI.",
+      "current_value": "Workload Identity Pool 'github-actions-pool' configured",
+      "recommended_value": "100% of CI/CD pipelines use WIF without stored credentials",
+      "status": "COMPLIANT",
+      "severity": "MEDIUM",
+      "evidence_source": "gcloud iam workload-identity-pools list",
+      "remediation_notes": "Maintain pool attribute conditions to restrict access to specific GitHub repos."
+    }
+  ]
+}
