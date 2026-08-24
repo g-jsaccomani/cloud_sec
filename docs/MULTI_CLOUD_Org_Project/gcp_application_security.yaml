@@ -1,0 +1,55 @@
+cloud_provider: GCP
+count: 4
+domain: application_security
+items:
+- category: API Security
+  control_name: Enforce OAuth2 / JWT Authorization on Apigee / API Gateways
+  current_value: 100% of production API routes enforce JWT verification with short
+    TTL (< 15 min)
+  description: All external APIs must require valid OAuth2 access tokens or JWT signatures
+    validated at the API Gateway edge.
+  evidence_source: gcloud api-gateway api-configs describe
+  id: GCP-APP-001
+  recommended_value: Mandatory OAuth2 / JWT verification on all published API endpoints
+  remediation_notes: Implement Apigee rate-limiting and spike arrest policies.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Secrets Management
+  control_name: Enforce Secret Manager for All Application Credentials & Auto-Rotation
+  current_value: 18 secrets stored in Secret Manager; 2 legacy services use plain-text
+    env vars
+  description: Applications must fetch DB passwords and API tokens from GCP Secret
+    Manager; no plain-text secrets in environment variables.
+  evidence_source: gcloud secrets list
+  id: GCP-APP-002
+  recommended_value: 100% Secret Manager adoption with Cloud Function automatic 90-day
+    rotation
+  remediation_notes: Migrate legacy DB connection strings to Secret Manager and configure
+    rotation schedule.
+  severity: CRITICAL
+  status: NON_COMPLIANT
+- category: DevSecOps & Supply Chain
+  control_name: Enable Artifact Registry Automatic Vulnerability Scanning
+  current_value: On-push vulnerability scanning active; 4 high CVEs detected in 'base-python-image'
+  description: Container images pushed to Artifact Registry must undergo automatic
+    vulnerability scanning for CVEs before deployment.
+  evidence_source: gcloud artifacts docker images list
+  id: GCP-APP-003
+  recommended_value: Automatic CVE scanning enabled with CI/CD build break on Critical/High
+    CVEs
+  remediation_notes: Update base images and patch OpenSSL/Python dependencies.
+  severity: HIGH
+  status: NON_COMPLIANT
+- category: Container Runtime Security
+  control_name: Enforce Binary Authorization on GKE and Cloud Run
+  current_value: Binary Authorization policy deployed in Report-Only mode on Cloud
+    Run
+  description: Only container images signed by authorized CI/CD attestors may be deployed
+    to production GKE clusters and Cloud Run services.
+  evidence_source: gcloud container binauthz policy describe
+  id: GCP-APP-004
+  recommended_value: Enforced Binary Authorization policy requiring valid CI/CD attestation
+  remediation_notes: Switch Binary Authorization mode from Report-Only to Enforce
+    for production project.
+  severity: HIGH
+  status: NON_COMPLIANT

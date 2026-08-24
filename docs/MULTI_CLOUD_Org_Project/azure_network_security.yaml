@@ -1,0 +1,49 @@
+cloud_provider: AZURE
+count: 4
+domain: network_security
+items:
+- category: Network Security Groups (NSGs)
+  control_name: Prohibit Ingress from Internet on RDP (3389) and SSH (22)
+  current_value: NSG 'nsg-prod-app' denies all internet management traffic
+  description: NSG inbound security rules must deny 0.0.0.0/0 on RDP and SSH ports.
+  evidence_source: az network nsg list
+  id: AZURE-NET-001
+  recommended_value: 0 NSGs allow unrestricted Internet access on ports 22/3389
+  remediation_notes: Use Azure Bastion for remote administrative VM access.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Perimeter Security
+  control_name: Enforce Azure Firewall Premium with IDPS and TLS Inspection
+  current_value: Azure Firewall Standard deployed without IDPS
+  description: Hub-and-spoke VNet architectures must route egress/ingress traffic
+    through Azure Firewall Premium with IDPS enabled in Alert & Deny mode.
+  evidence_source: az network firewall list
+  id: AZURE-NET-002
+  recommended_value: Azure Firewall Premium with IDPS Mode = 'AlertAndDeny'
+  remediation_notes: Upgrade Azure Firewall SKU from Standard to Premium and configure
+    IDPS signatures.
+  severity: HIGH
+  status: NON_COMPLIANT
+- category: DDoS Protection
+  control_name: Enable Azure DDoS Protection Standard on Production Virtual Networks
+  current_value: DDoS Standard enabled on 'vnet-hub-prod'
+  description: Production VNets hosting internet-facing endpoints must be enrolled
+    in Azure DDoS Protection Standard.
+  evidence_source: az network ddos-protection list
+  id: AZURE-NET-003
+  recommended_value: DDoS Standard protection plan attached to all public VNets
+  remediation_notes: Review DDoS alert telemetry in Azure Monitor log workspace.
+  severity: HIGH
+  status: COMPLIANT
+- category: Web Application Firewall
+  control_name: Enable WAF in Prevention Mode on Application Gateway / Front Door
+  current_value: App Gateway WAF in Prevention mode with CRS 3.2
+  description: Application Gateways and Front Door endpoints must execute WAF in Prevention
+    mode with OWASP Core Rule Set 3.2+.
+  evidence_source: az network application-gateway waf-config show
+  id: AZURE-NET-004
+  recommended_value: WAF = Prevention mode across 100% of public HTTP/HTTPS listeners
+  remediation_notes: Regularly review WAF firewall logs for false positives and custom
+    exclusion rules.
+  severity: HIGH
+  status: COMPLIANT

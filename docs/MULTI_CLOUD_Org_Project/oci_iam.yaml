@@ -1,0 +1,51 @@
+cloud_provider: OCI
+count: 4
+domain: iam
+items:
+- category: MFA & Authentication
+  control_name: Enforce Multi-Factor Authentication (MFA) across All Identity Domains
+  current_value: Default Identity Domain enforces MFA; 2 test local accounts exempt
+  description: OCI IAM sign-on policies must enforce MFA for all local administrators
+    and federated users.
+  evidence_source: oci iam identity-provider list / oci iam policy list
+  id: OCI-IAM-001
+  recommended_value: 100% MFA enforcement with no user exemptions
+  remediation_notes: Remove MFA policy exemptions for test accounts or disable accounts.
+  severity: CRITICAL
+  status: NON_COMPLIANT
+- category: Compartment Security
+  control_name: Enforce Least Privilege Compartment-Level Policy Assignments
+  current_value: 3 policies allow 'manage all-resources in tenancy'
+  description: IAM policies must be scoped to specific child compartments (e.g., 'in
+    compartment Prod_App') rather than root tenancy.
+  evidence_source: oci iam policy list --compartment-id <TENANCY_ID>
+  id: OCI-IAM-002
+  recommended_value: Restrict 'manage all-resources' to dedicated Tenancy Administrators
+    group only
+  remediation_notes: Refactor broad tenancy-level policies to target specific compartment
+    OCIDs.
+  severity: HIGH
+  status: NON_COMPLIANT
+- category: Workload Authentication
+  control_name: Enforce Dynamic Groups for Instance Authentication to OCI Services
+  current_value: Dynamic Group 'dg-prod-compute' configured for OCI Object Storage
+    access
+  description: Use OCI Dynamic Groups and Instance Principals instead of storing user
+    API signing keys on compute instances.
+  evidence_source: oci iam dynamic-group list
+  id: OCI-IAM-003
+  recommended_value: 100% of compute/OKE workloads use Dynamic Groups / Workload Identity
+  remediation_notes: Maintain matching rule criteria to prevent unauthorized VM inclusion.
+  severity: HIGH
+  status: COMPLIANT
+- category: API Key Hygiene
+  control_name: Rotate User API Signing Keys Every 90 Days
+  current_value: 1 API signing key > 90 days old detected
+  description: User API signing keys older than 90 days must be rotated or deleted.
+  evidence_source: oci iam user-api-key list
+  id: OCI-IAM-004
+  recommended_value: 0 API signing keys older than 90 days
+  remediation_notes: Delete expired API key for user 'oci-backup-agent' after migrating
+    to Instance Principals.
+  severity: MEDIUM
+  status: NON_COMPLIANT

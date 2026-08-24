@@ -1,0 +1,52 @@
+cloud_provider: OCI
+count: 4
+domain: compliance_governance
+items:
+- category: Security Zones
+  control_name: Enforce Maximum Security Zone Recipes on Production Compartments
+  current_value: Compartment 'Prod_Core' assigned to Maximum Security Zone recipe
+  description: Production compartments must reside inside an OCI Security Zone enforcing
+    immutable security policies (e.g., prevent public buckets, require CMEK).
+  evidence_source: oci cloud-guard security-zone list
+  id: OCI-GOV-001
+  recommended_value: All production compartments enrolled in Security Zone guardrails
+  remediation_notes: Audit security zone policy violations in Cloud Guard dashboard.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Resource Tagging
+  control_name: Enforce Tag Namespace Defaults for Security Classification & Cost
+    Tracking
+  current_value: Tag Namespace 'EnterpriseSec' active with Tag Defaults on root compartment
+  description: Tag Namespaces must define mandatory keys ('SecurityClass', 'Owner',
+    'Project') automatically applied upon resource creation.
+  evidence_source: oci iam tag-namespace list / oci iam tag-default list
+  id: OCI-GOV-002
+  recommended_value: Mandatory Tag Defaults enforced across 100% of compartments
+  remediation_notes: Maintain tag retirement rules to prevent deprecated key sprawl.
+  severity: LOW
+  status: COMPLIANT
+- category: CIS Benchmarks
+  control_name: Align Tenancy with CIS Oracle Cloud Infrastructure Foundations Benchmark
+  current_value: CIS Foundations compliance score = 86%
+  description: The tenancy must continuously evaluate against the CIS OCI Foundations
+    Benchmark v2.0 in Cloud Guard.
+  evidence_source: oci cloud-guard problem list
+  id: OCI-GOV-003
+  recommended_value: Target CIS Foundations score >= 90%
+  remediation_notes: Remediate open IAM password policy and VCN flow log benchmark
+    findings.
+  severity: HIGH
+  status: NON_COMPLIANT
+- category: Resource Quotas & Limits
+  control_name: Enforce Compartment Quota Policies to Prevent Unauthorized Compute/GPU
+    Proliferation
+  current_value: Quota policy 'zero-gpu-nonprod' active
+  description: Quota policies must restrict high-cost GPU and bare-metal compute instances
+    in non-production compartments.
+  evidence_source: oci limits quota list
+  id: OCI-GOV-004
+  recommended_value: Explicit compute quota caps defined for Dev, QA, and Sandbox
+    compartments
+  remediation_notes: Review quota exception requests monthly.
+  severity: MEDIUM
+  status: COMPLIANT

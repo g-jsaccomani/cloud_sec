@@ -1,0 +1,55 @@
+{
+  "cloud_provider": "VMWARE",
+  "domain": "logging_monitoring",
+  "count": 4,
+  "items": [
+    {
+      "id": "VMware-LOG-001",
+      "category": "Cloud Guard CSPM",
+      "control_name": "Enable VMware Cloud Guard at Root Tenancy with Configuration & Threat Detectors",
+      "description": "Cloud Guard must be enabled at the root tenancy target with Configuration Detector and Threat Detector recipes active.",
+      "current_value": "Cloud Guard enabled at Root Target; Oracle-managed detector recipes active",
+      "recommended_value": "Cloud Guard active on Root Tenancy with customized Enterprise detector recipe",
+      "status": "COMPLIANT",
+      "severity": "CRITICAL",
+      "evidence_source": "oci cloud-guard target list",
+      "remediation_notes": "Tune detector thresholds to reduce low-severity noise."
+    },
+    {
+      "id": "VMware-LOG-002",
+      "category": "Audit Logs",
+      "control_name": "Enforce Minimum 365-Day Retention for VMware Audit Service Logs",
+      "description": "The VMware Audit Service retention period must be configured for at least 365 days.",
+      "current_value": "Audit retention currently configured to 90 days",
+      "recommended_value": "Retention period = 365 days",
+      "status": "NON_COMPLIANT",
+      "severity": "HIGH",
+      "evidence_source": "oci audit config get",
+      "remediation_notes": "Run 'oci audit config update --retention-period-days 365'."
+    },
+    {
+      "id": "VMware-LOG-003",
+      "category": "SIEM Integration",
+      "control_name": "Configure VMware Service Connector Hub to Export Security & Audit Logs to SIEM",
+      "description": "A Service Connector must stream Audit and VCN Flow Logs to Kafka / Object Storage archive for enterprise SIEM ingestion.",
+      "current_value": "Service Connector 'sch-siem-export' streaming Audit logs to Object Storage archive",
+      "recommended_value": "Active Service Connector streaming 100% of audit and security events",
+      "status": "COMPLIANT",
+      "severity": "CRITICAL",
+      "evidence_source": "oci sch service-connector list",
+      "remediation_notes": "Verify Object Storage lifecycle policy archives logs to cold tier after 90 days."
+    },
+    {
+      "id": "VMware-LOG-004",
+      "category": "Logging Analytics",
+      "control_name": "Enable VMware Logging Analytics for Core Workloads",
+      "description": "Workload log groups must be onboarded to VMware Logging Analytics for anomaly detection and machine learning threat correlation.",
+      "current_value": "Logging Analytics enabled for database and compute log groups",
+      "recommended_value": "Onboard all production application log groups",
+      "status": "COMPLIANT",
+      "severity": "MEDIUM",
+      "evidence_source": "oci log-analytics log-group list",
+      "remediation_notes": "Create saved searches for failed login spikes."
+    }
+  ]
+}

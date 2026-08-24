@@ -1,0 +1,53 @@
+cloud_provider: GCP
+count: 4
+domain: incident_response_dr
+items:
+- category: Immutable Backups
+  control_name: Enforce Backup and DR Service Immutable Vaults against Ransomware
+  current_value: Backup Vault 'vault-prod-immutable' active with 30-day WORM lock
+  description: Production databases and stateful workloads must be backed up to an
+    immutable Backup and DR Service vault with WORM retention.
+  evidence_source: gcloud backup-dr backup-vaults list
+  id: GCP-DR-001
+  recommended_value: Immutable backup vault enforced across all stateful production
+    projects
+  remediation_notes: Test restoration of encrypted backups semi-annually.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Forensic Readiness
+  control_name: Configure Automated Forensic Disk Snapshot Pipeline
+  current_value: Cloud Function 'secops-forensic-snapshot-bot' linked to SCC Critical
+    alerts
+  description: Incident response workflows must be capable of automatically creating
+    isolated, read-only forensic snapshots of VM disks upon SCC alert trigger.
+  evidence_source: gcloud functions describe secops-forensic-snapshot-bot
+  id: GCP-DR-002
+  recommended_value: Automated forensic snapshot capture active in 100% of projects
+  remediation_notes: Ensure forensic snapshots are stored in dedicated IR storage
+    project.
+  severity: HIGH
+  status: COMPLIANT
+- category: Snapshot Schedules
+  control_name: Enforce Daily Resource Policy Snapshot Schedules on Compute Disks
+  current_value: Snapshot schedule 'sched-daily-prod' attached to 14 of 16 VMs
+  description: All production VM boot and data disks must be attached to a Resource
+    Policy snapshot schedule retaining backups for >= 14 days.
+  evidence_source: gcloud compute resource-policies list
+  id: GCP-DR-003
+  recommended_value: 100% disk coverage with automated snapshot schedules
+  remediation_notes: Attach 'sched-daily-prod' to unmanaged disks on 'vm-app-03' and
+    'vm-app-04'.
+  severity: HIGH
+  status: NON_COMPLIANT
+- category: Disaster Recovery Replication
+  control_name: Enforce Cross-Region Replication on Primary Cloud Storage Buckets
+  current_value: Bucket 'gs://gs-prod-customer-data' configured as Dual-Region (us-east1,
+    us-central1) with Turbo Replication
+  description: Business-critical Cloud Storage buckets must use Dual-Region or Multi-Region
+    locations with Turbo Replication enabled.
+  evidence_source: gcloud storage buckets describe gs://gs-prod-customer-data
+  id: GCP-DR-004
+  recommended_value: Dual-Region + Turbo Replication on all critical data stores
+  remediation_notes: Verify RPO < 15 minutes SLA under simulated region failover.
+  severity: MEDIUM
+  status: COMPLIANT

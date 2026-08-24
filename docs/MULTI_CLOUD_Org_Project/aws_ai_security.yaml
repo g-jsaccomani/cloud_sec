@@ -1,0 +1,57 @@
+cloud_provider: AWS
+count: 4
+domain: ai_security
+items:
+- category: Amazon Bedrock Security
+  control_name: Enforce Amazon Bedrock Guardrails for Content Safety & PII Redaction
+  current_value: Guardrail 'bedrock-enterprise-guard' active with PII masking and
+    prompt attack filter
+  description: Generative AI applications on Amazon Bedrock must enforce Guardrails
+    to block harmful topics, hate speech, and redact PII in input/output.
+  evidence_source: aws bedrock list-guardrails
+  id: AWS-AI-001
+  recommended_value: Bedrock Guardrails enforced on 100% of LLM invocations
+  remediation_notes: Regularly evaluate guardrail latency and accuracy against benchmark
+    prompt sets.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Amazon SageMaker Security
+  control_name: Enforce VPC Endpoints (PrivateLink) on SageMaker Notebooks and Training
+    Jobs
+  current_value: 4 SageMaker notebooks deployed in private VPC; 1 legacy notebook
+    allows DirectInternetAccess=True
+  description: SageMaker Studio notebooks and training jobs must deploy in private
+    VPC subnets with directAccessOnly=True and no public Internet egress.
+  evidence_source: aws sagemaker list-notebook-instances
+  id: AWS-AI-002
+  recommended_value: DirectInternetAccess=False across 100% of SageMaker resources
+  remediation_notes: Reconfigure 'ml-notebook-test' to use VPC PrivateLink endpoints.
+  severity: CRITICAL
+  status: NON_COMPLIANT
+- category: Model & Data Encryption
+  control_name: Enforce Customer Managed KMS Key (CMK) on SageMaker Model Artifacts
+    & S3 Training Data
+  current_value: CMEK active on production S3 buckets; AWS-managed KMS key used on
+    Dev artifacts
+  description: All SageMaker model artifacts and S3 training data buckets must be
+    encrypted with Customer Managed KMS Keys.
+  evidence_source: aws sagemaker list-models
+  id: AWS-AI-003
+  recommended_value: Customer Managed Key (CMK) enforced across all ML data stores
+  remediation_notes: Update model artifact encryption parameter to reference enterprise
+    KMS CMK ARN.
+  severity: HIGH
+  status: NON_COMPLIANT
+- category: Bedrock Auditing
+  control_name: Enable Comprehensive Model Invocation Logging in Amazon Bedrock
+  current_value: Model invocation logging enabled -> CloudWatch Log Group '/aws/bedrock/audit'
+  description: Amazon Bedrock must be configured to log all text/image model invocations
+    to an encrypted CloudWatch Log Group and S3 archive.
+  evidence_source: aws bedrock get-model-invocation-logging-configuration
+  id: AWS-AI-004
+  recommended_value: Active Bedrock model logging with KMS encryption and >= 365 days
+    retention
+  remediation_notes: Configure CloudWatch Metric Alarm for excessive token usage or
+    repeated guardrail blocks.
+  severity: HIGH
+  status: COMPLIANT

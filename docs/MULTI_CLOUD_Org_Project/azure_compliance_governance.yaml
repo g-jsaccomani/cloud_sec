@@ -1,0 +1,51 @@
+cloud_provider: AZURE
+count: 4
+domain: compliance_governance
+items:
+- category: Azure Policy & MCSB
+  control_name: Assign Microsoft Cloud Security Benchmark at Management Group Root
+  current_value: Assigned to 'mg-enterprise-root' with 88% compliance score
+  description: The Microsoft Cloud Security Benchmark (MCSB) initiative must be assigned
+    at the root Management Group.
+  evidence_source: az policy assignment list --scope /providers/Microsoft.Management/managementGroups/<MG_ID>
+  id: AZURE-GOV-001
+  recommended_value: MCSB initiative assigned and enforced across all management groups
+  remediation_notes: Review exempt resources and require quarterly CISO re-attestation.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Resource Protection
+  control_name: Enforce CanNotDelete Resource Locks on Production Resource Groups
+  current_value: Lock applied to 8 of 10 production resource groups
+  description: Production resource groups containing stateful databases, VNets, and
+    Key Vaults must have 'CanNotDelete' locks assigned.
+  evidence_source: az lock list
+  id: AZURE-GOV-002
+  recommended_value: CanNotDelete lock on 100% of production core infrastructure
+  remediation_notes: Apply CanNotDelete lock to 'rg-prod-sql-eastus' and 'rg-prod-vnet-hub'.
+  severity: HIGH
+  status: NON_COMPLIANT
+- category: Management Group Hierarchy
+  control_name: Enforce Enterprise Landing Zone Management Group Architecture
+  current_value: Management Group hierarchy deployed; 2 subscriptions in Default Root
+    MG
+  description: Subscriptions must be organized into clear Management Group tiers (Platform/Connectivity,
+    Identity, LandingZones/Prod, Non-Prod).
+  evidence_source: az account management-group list
+  id: AZURE-GOV-003
+  recommended_value: 0 subscriptions residing directly under Root Management Group
+  remediation_notes: Move orphan subscriptions into appropriate Landing Zone management
+    group.
+  severity: MEDIUM
+  status: NON_COMPLIANT
+- category: Resource Tagging
+  control_name: Enforce Mandatory Security Classification & Owner Tags via Azure Policy
+  current_value: Policy 'Deny-Missing-Tags' active across all subscriptions
+  description: Azure Policy must deny resource creation if mandatory tags ('Environment',
+    'DataClassification', 'CostCenter') are missing.
+  evidence_source: az policy assignment show --name Deny-Missing-Tags
+  id: AZURE-GOV-004
+  recommended_value: Mandatory tagging enforced via 'Deny' policy effect
+  remediation_notes: Maintain automated remediation tasks for inherited resource group
+    tags.
+  severity: LOW
+  status: COMPLIANT

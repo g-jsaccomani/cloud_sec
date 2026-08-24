@@ -1,0 +1,50 @@
+cloud_provider: AWS
+count: 4
+domain: compliance_governance
+items:
+- category: Service Control Policies (SCPs)
+  control_name: Enforce SCP Preventing CloudTrail & GuardDuty Deactivation
+  current_value: SCP 'scp-guardrails-core' attached to Root Organization OU
+  description: An Organization-level SCP must deny 'cloudtrail:StopLogging', 'cloudtrail:DeleteTrail',
+    and 'guardduty:DisableOrganizationAdminAccount'.
+  evidence_source: aws organizations list-policies
+  id: AWS-GOV-001
+  recommended_value: Active guardrail SCP enforced on all member accounts
+  remediation_notes: Verify SCP exceptions are restricted to emergency break-glass
+    roles.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Service Control Policies (SCPs)
+  control_name: Enforce SCP Restricting Permitted AWS Regions
+  current_value: SCP 'scp-region-lock' enforced on Production OU
+  description: Restrict AWS region operations to authorized data residency regions
+    (e.g., us-east-1, us-west-2).
+  evidence_source: aws organizations list-targets-for-policy
+  id: AWS-GOV-002
+  recommended_value: Region restriction SCP active across all OUs
+  remediation_notes: Audit global service exceptions (IAM, CloudFront, Route53).
+  severity: HIGH
+  status: COMPLIANT
+- category: Data Backup Governance
+  control_name: Enforce Immutable AWS Backup Vault Lock
+  current_value: Vault 'prod-backup-vault' has Vault Lock active (MinRetentionDays
+    = 30)
+  description: Production AWS Backup vaults must have Vault Lock in Compliance mode
+    to prevent backup deletion by ransomware.
+  evidence_source: aws backup describe-backup-vault
+  id: AWS-GOV-003
+  recommended_value: Vault Lock Compliance Mode enabled on all primary vaults
+  remediation_notes: Ensure disaster recovery restoration tests occur semi-annually.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Patch Management
+  control_name: Enforce SSM Patch Manager Compliance for EC2 & Hybrid Servers
+  current_value: 92% of EC2 instances compliant with 'Enterprise-AmazonLinux-Baseline'
+  description: All managed nodes must report compliant against enterprise patch baseline
+    within 7 days of release.
+  evidence_source: aws ssm list-compliance-summaries
+  id: AWS-GOV-004
+  recommended_value: 100% patch compliance across all OS distributions
+  remediation_notes: Schedule patch maintenance window for 8 non-compliant instances.
+  severity: HIGH
+  status: NON_COMPLIANT

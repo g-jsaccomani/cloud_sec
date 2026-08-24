@@ -1,0 +1,51 @@
+cloud_provider: AZURE
+count: 4
+domain: compute_security
+items:
+- category: Virtual Machines
+  control_name: Enforce Trusted Launch (Secure Boot & vTPM) on Azure VMs
+  current_value: 14 VMs use Trusted Launch; 2 legacy VMs use Standard Gen1 type
+  description: Azure VMs must be deployed with Trusted Launch security type enabled
+    (SecureBoot and vTPM = True).
+  evidence_source: az vm list
+  id: AZURE-COMP-001
+  recommended_value: 100% Trusted Launch VMs
+  remediation_notes: Plan migration of Gen1 legacy VMs 'vm-sql-legacy' and 'vm-ad-legacy'
+    to Gen2 Trusted Launch.
+  severity: HIGH
+  status: NON_COMPLIANT
+- category: Virtual Machines
+  control_name: Enforce Azure Bastion for Secure Remote VM Administration
+  current_value: Azure Bastion deployed in 'vnet-hub-prod'; 0 VMs have Public IPs
+    assigned
+  description: Remote RDP/SSH access to VMs must traverse an Azure Bastion host without
+    public IP assignment on VMs.
+  evidence_source: az network public-ip list / az network bastion list
+  id: AZURE-COMP-002
+  recommended_value: 100% Bastion-managed administrative access; 0 VM Public IPs
+  remediation_notes: Require Entra ID native authentication for Bastion sessions.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: AKS Kubernetes Security
+  control_name: Enforce AKS Private Cluster with Azure AD / Entra ID RBAC
+  current_value: Cluster 'aks-prod-01' is Private with Entra RBAC and Azure Policy
+    Add-on enabled
+  description: AKS clusters must be private (enablePrivateCluster = True) and use
+    Microsoft Entra ID integration for RBAC.
+  evidence_source: az aks show
+  id: AZURE-COMP-003
+  recommended_value: Private Cluster = True, enableAzureRBAC = True
+  remediation_notes: Disable local account admin access using 'az aks update --disable-local-accounts'.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: AKS Kubernetes Security
+  control_name: Enforce Azure Policy Add-on for AKS Pod Security Standards
+  current_value: Azure Policy Add-on enabled on 100% of AKS clusters
+  description: AKS clusters must run the Azure Policy add-on to enforce Baseline/Restricted
+    Pod Security Standards.
+  evidence_source: az aks show --query addonProfiles.azurepolicy
+  id: AZURE-COMP-004
+  recommended_value: Azure Policy Add-on active with Pod Security Restricted initiative
+  remediation_notes: Audit policy violations in Policy Compliance dashboard.
+  severity: HIGH
+  status: COMPLIANT

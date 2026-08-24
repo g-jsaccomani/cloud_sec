@@ -1,0 +1,53 @@
+cloud_provider: OCI
+count: 4
+domain: data_protection
+items:
+- category: Object Storage
+  control_name: Enforce Private Visibility on All OCI Object Storage Buckets
+  current_value: 14 buckets set to NoPublicAccess; 0 public buckets detected
+  description: Buckets must have publicAccessType set to 'NoPublicAccess' to prevent
+    anonymous data downloads.
+  evidence_source: oci os bucket list
+  id: OCI-DATA-001
+  recommended_value: 100% of Object Storage buckets set to NoPublicAccess
+  remediation_notes: Use pre-authenticated requests (PARs) with short TTL for temporary
+    external sharing.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: OCI Vault & KMS
+  control_name: Enforce Customer-Managed KMS Key Encryption on Object Storage & Block
+    Volumes
+  current_value: Customer-Managed KMS Keys active on Production buckets; Oracle-managed
+    keys on Dev volumes
+  description: Sensitive buckets and boot/data block volumes must use OCI Vault Customer-Managed
+    Master Encryption Keys (MEKs).
+  evidence_source: oci kms management key list
+  id: OCI-DATA-002
+  recommended_value: Customer-Managed Master Encryption Key (MEK) across all production
+    data stores
+  remediation_notes: Assign OCI Vault MEK to remaining Dev/QA block volumes.
+  severity: HIGH
+  status: NON_COMPLIANT
+- category: OCI Vault & KMS
+  control_name: Enforce Annual Rotation of OCI Vault Master Encryption Keys
+  current_value: Key rotation disabled on 2 Master Encryption Keys
+  description: Vault master encryption keys must have automatic key rotation enabled
+    or be manually rotated at least every 365 days.
+  evidence_source: oci kms management key get
+  id: OCI-DATA-003
+  recommended_value: Auto-rotation cycle <= 365 days enabled
+  remediation_notes: Enable automatic rotation on 'key-prod-master' and 'key-db-master'.
+  severity: HIGH
+  status: NON_COMPLIANT
+- category: Database Security
+  control_name: Enforce Mutual TLS (mTLS) Authentication on Autonomous Databases
+  current_value: 100% of Autonomous Databases require mTLS with Client Wallet
+  description: OCI Autonomous Databases must require mTLS authentication with wallet
+    verification.
+  evidence_source: oci db autonomous-database list
+  id: OCI-DATA-004
+  recommended_value: requireMutualTls = True
+  remediation_notes: Securely rotate and distribute mTLS wallets to authorized application
+    servers only.
+  severity: CRITICAL
+  status: COMPLIANT

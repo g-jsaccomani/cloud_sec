@@ -1,0 +1,52 @@
+cloud_provider: GCP
+count: 4
+domain: logging_monitoring
+items:
+- category: Cloud Audit Logs
+  control_name: Enable Data Access Audit Logs Across All Services
+  current_value: Data Access logs enabled for Cloud Storage and BigQuery; missing
+    for IAM
+  description: Admin Activity, Data Access (ADMIN_READ, DATA_READ, DATA_WRITE), and
+    System Event logs must be enabled.
+  evidence_source: gcloud projects get-iam-policy (auditConfigs)
+  id: GCP-LOG-001
+  recommended_value: Enable Data Access audit logging for all core services
+  remediation_notes: Update auditConfigs in organization IAM policy to capture all
+    read/write data events.
+  severity: HIGH
+  status: NON_COMPLIANT
+- category: Log Archiving & SIEM
+  control_name: Centralized Security Log Sink to Cloud Storage / PubSub SIEM
+  current_value: Aggregated org sink 'siem-security-export' active -> Pub/Sub topic
+  description: An aggregated log sink must export security logs to a dedicated, immutable
+    archive bucket or Pub/Sub SIEM feed.
+  evidence_source: gcloud logging sinks list --organization=<ORG_ID>
+  id: GCP-LOG-002
+  recommended_value: Active aggregated sink with Bucket Lock / retention policy >=
+    365 days
+  remediation_notes: Verify Pub/Sub dead-letter queue metrics and SIEM ingestion SLA.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Security Posture Management
+  control_name: Security Command Center (SCC) Premium Tier & Continuous Monitoring
+  current_value: SCC Enterprise Tier active; Event Threat Detection enabled
+  description: Security Command Center must be active at Org level with Event Threat
+    Detection and Security Health Analytics.
+  evidence_source: gcloud scc settings describe
+  id: GCP-LOG-003
+  recommended_value: SCC Enterprise/Premium active across all organization folders
+  remediation_notes: Review unassigned critical findings weekly.
+  severity: HIGH
+  status: COMPLIANT
+- category: Network Visibility
+  control_name: VPC Flow Logs Enabled with Appropriate Sampling Rate
+  current_value: Enabled on 8 of 10 subnets (aggregation interval 5s, sample rate
+    0.5)
+  description: VPC Flow Logs should be enabled on all production subnets with metadata
+    annotation.
+  evidence_source: gcloud compute networks subnets list
+  id: GCP-LOG-004
+  recommended_value: 100% subnet coverage for production VPCs
+  remediation_notes: Enable flow logs on remaining subnets for network forensic readiness.
+  severity: MEDIUM
+  status: NON_COMPLIANT

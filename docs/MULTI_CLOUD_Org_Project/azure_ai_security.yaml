@@ -1,0 +1,52 @@
+cloud_provider: AZURE
+count: 4
+domain: ai_security
+items:
+- category: Azure OpenAI Security
+  control_name: Enforce Private Endpoints & Disable Public Network Access on Azure
+    OpenAI
+  current_value: All 4 Azure OpenAI resources use Private Endpoints with publicNetworkAccess=Disabled
+  description: Azure OpenAI instances must disable public network access (publicNetworkAccess=Disabled)
+    and communicate exclusively via Private Endpoints.
+  evidence_source: az cognitiveservices account list
+  id: AZURE-AI-001
+  recommended_value: 100% Private Endpoints; Public Network Access = Disabled
+  remediation_notes: Verify DNS integration with Private DNS Zone 'privatelink.openai.azure.com'.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: AI Safety & Content Filtering
+  control_name: Enforce Azure AI Content Safety Filters against Prompt Injection &
+    Jailbreaks
+  current_value: Filter 'content-safety-strict' attached to production LLM deployments
+  description: Azure OpenAI deployments must attach an AI Content Safety filter configured
+    to block hate speech, jailbreaks, and prompt injection attempts.
+  evidence_source: az cognitiveservices account deployment list
+  id: AZURE-AI-002
+  recommended_value: AI Content Safety filter active on all model deployments
+  remediation_notes: Regularly review Content Safety block logs in Log Analytics.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Azure Machine Learning
+  control_name: Enforce Customer Managed Key (CMK) Encryption on Azure ML Workspaces
+  current_value: CMK encryption active on workspace 'ml-prod-workspace'; Microsoft-managed
+    key on 'ml-dev'
+  description: Azure Machine Learning workspaces must use Key Vault Customer Managed
+    Keys to encrypt training metrics, datasets, and notebooks.
+  evidence_source: az ml workspace show
+  id: AZURE-AI-003
+  recommended_value: Customer Managed Key (CMK) enforced across all ML workspaces
+  remediation_notes: Enable Key Vault CMK encryption on 'ml-dev' workspace.
+  severity: HIGH
+  status: NON_COMPLIANT
+- category: Azure Machine Learning
+  control_name: Enforce Managed Virtual Network Isolation for Azure ML Compute
+  current_value: Managed Virtual Network = 'AllowOnlyApprovedOutbound' on 100% of
+    ML compute
+  description: Azure Machine Learning compute instances and clusters must deploy behind
+    a Managed Virtual Network with outbound FQDN rules.
+  evidence_source: az ml compute list
+  id: AZURE-AI-004
+  recommended_value: Managed VNet Isolation enabled with restricted outbound rules
+  remediation_notes: Audit custom FQDN outbound exceptions monthly.
+  severity: HIGH
+  status: COMPLIANT

@@ -1,0 +1,55 @@
+cloud_provider: OCI
+count: 4
+domain: logging_monitoring
+items:
+- category: Cloud Guard CSPM
+  control_name: Enable OCI Cloud Guard at Root Tenancy with Configuration & Threat
+    Detectors
+  current_value: Cloud Guard enabled at Root Target; Oracle-managed detector recipes
+    active
+  description: Cloud Guard must be enabled at the root tenancy target with Configuration
+    Detector and Threat Detector recipes active.
+  evidence_source: oci cloud-guard target list
+  id: OCI-LOG-001
+  recommended_value: Cloud Guard active on Root Tenancy with customized Enterprise
+    detector recipe
+  remediation_notes: Tune detector thresholds to reduce low-severity noise.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Audit Logs
+  control_name: Enforce Minimum 365-Day Retention for OCI Audit Service Logs
+  current_value: Audit retention currently configured to 90 days
+  description: The OCI Audit Service retention period must be configured for at least
+    365 days.
+  evidence_source: oci audit config get
+  id: OCI-LOG-002
+  recommended_value: Retention period = 365 days
+  remediation_notes: Run 'oci audit config update --retention-period-days 365'.
+  severity: HIGH
+  status: NON_COMPLIANT
+- category: SIEM Integration
+  control_name: Configure OCI Service Connector Hub to Export Security & Audit Logs
+    to SIEM
+  current_value: Service Connector 'sch-siem-export' streaming Audit logs to Object
+    Storage archive
+  description: A Service Connector must stream Audit and VCN Flow Logs to Kafka /
+    Object Storage archive for enterprise SIEM ingestion.
+  evidence_source: oci sch service-connector list
+  id: OCI-LOG-003
+  recommended_value: Active Service Connector streaming 100% of audit and security
+    events
+  remediation_notes: Verify Object Storage lifecycle policy archives logs to cold
+    tier after 90 days.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Logging Analytics
+  control_name: Enable OCI Logging Analytics for Core Workloads
+  current_value: Logging Analytics enabled for database and compute log groups
+  description: Workload log groups must be onboarded to OCI Logging Analytics for
+    anomaly detection and machine learning threat correlation.
+  evidence_source: oci log-analytics log-group list
+  id: OCI-LOG-004
+  recommended_value: Onboard all production application log groups
+  remediation_notes: Create saved searches for failed login spikes.
+  severity: MEDIUM
+  status: COMPLIANT

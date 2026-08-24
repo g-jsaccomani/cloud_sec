@@ -1,0 +1,49 @@
+cloud_provider: AWS
+count: 4
+domain: iam
+items:
+- category: Root Account Security
+  control_name: Enforce Hardware MFA on AWS Root Account
+  current_value: Root MFA Enabled = True, Active Access Keys = 0
+  description: The AWS Root account must have a dedicated Hardware MFA token enabled
+    and no active access keys.
+  evidence_source: aws iam get-account-summary
+  id: AWS-IAM-001
+  recommended_value: Hardware MFA Enforced, Access Keys = 0
+  remediation_notes: Secure physical hardware token in enterprise fireproof safe.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Access Key Hygiene
+  control_name: Rotate IAM User Access Keys Every 90 Days
+  current_value: 4 IAM users have access keys > 90 days old
+  description: All IAM user programmatic access keys older than 90 days must be deactivated
+    and rotated.
+  evidence_source: aws iam generate-credential-report
+  id: AWS-IAM-002
+  recommended_value: 0 keys > 90 days old; migrate to IAM Roles / OIDC
+  remediation_notes: Deactivate stale access keys for 'legacy-jenkins-bot' and 'developer-svc'.
+  severity: HIGH
+  status: NON_COMPLIANT
+- category: Password Policy
+  control_name: Enforce Strict IAM Password Policy (CIS 1.x)
+  current_value: Minimum length = 14, Symbols required = True, Max age = 90 days
+  description: Password policy must require minimum length >= 14, uppercase, lowercase,
+    numbers, symbols, and 90-day expiry.
+  evidence_source: aws iam get-account-password-policy
+  id: AWS-IAM-003
+  recommended_value: Min length 14, all complexity rules enabled, max age 90 days
+  remediation_notes: Prefer IAM Identity Center (SSO) with enterprise IdP over local
+    IAM passwords.
+  severity: MEDIUM
+  status: COMPLIANT
+- category: Single Sign-On (SSO)
+  control_name: Enforce AWS IAM Identity Center (SSO) for Human Users
+  current_value: IAM Identity Center active; 3 legacy IAM users still login via console
+  description: Human users must authenticate via AWS IAM Identity Center integrated
+    with Google Workspace / Okta.
+  evidence_source: aws sso-admin list-instances
+  id: AWS-IAM-004
+  recommended_value: 100% human login via IAM Identity Center
+  remediation_notes: Remove console login profiles for the 3 remaining local IAM users.
+  severity: HIGH
+  status: NON_COMPLIANT

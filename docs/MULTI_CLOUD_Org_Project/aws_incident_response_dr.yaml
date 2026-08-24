@@ -1,0 +1,57 @@
+cloud_provider: AWS
+count: 4
+domain: incident_response_dr
+items:
+- category: Backup Resilience
+  control_name: Enforce Cross-Region Backup Copy in AWS Backup Plans
+  current_value: Backup plan 'prod-daily-backup' copies snapshots to us-east-1 with
+    30-day retention
+  description: Primary backup plans must automatically copy recovery points to an
+    alternate disaster recovery region (e.g., us-west-2 -> us-east-1).
+  evidence_source: aws backup list-backup-plans
+  id: AWS-DR-001
+  recommended_value: Cross-region copy enabled on 100% of production backup plans
+  remediation_notes: Verify KMS encryption key in target destination region supports
+    automated restore.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Forensic Readiness
+  control_name: Configure Automated Forensic EC2 Snapshot Isolation IAM Roles
+  current_value: IAM Role 'ir-forensic-snapshot-role' active and tested with EventBridge
+    automation
+  description: Incident response accounts must have pre-authorized IAM roles enabling
+    automated forensic disk snapshot creation upon GuardDuty/Security Hub critical
+    alerts.
+  evidence_source: aws iam get-role --role-name ir-forensic-snapshot-role
+  id: AWS-DR-002
+  recommended_value: Automated IR snapshot isolation role active across all accounts
+  remediation_notes: Review KMS key permissions to ensure forensic team can mount
+    isolated EBS snapshots.
+  severity: HIGH
+  status: COMPLIANT
+- category: Disaster Recovery Replication
+  control_name: Enforce AWS Elastic Disaster Recovery (DRS) Continuous Replication
+    for Mission-Critical VMs
+  current_value: DRS replication active on 6 Tier-0 database/app servers; 2 servers
+    pending agent installation
+  description: Tier-0 stateful compute workloads must be enrolled in AWS Elastic Disaster
+    Recovery (DRS) with RPO <= 5 minutes.
+  evidence_source: aws drs describe-source-servers
+  id: AWS-DR-003
+  recommended_value: 100% DRS replication coverage for Tier-0 workloads
+  remediation_notes: Install AWS DRS replication agent on 'db-prod-legacy-01' and
+    'app-core-auth'.
+  severity: HIGH
+  status: NON_COMPLIANT
+- category: Incident Response Playbooks
+  control_name: Enforce Emergency Break-Glass Account Monitoring & Alerting
+  current_value: EventBridge rule 'alert-break-glass-login' active
+  description: Use of emergency break-glass IAM roles/users must immediately trigger
+    high-priority alerts in PagerDuty/SIEM via EventBridge.
+  evidence_source: aws events list-rules
+  id: AWS-DR-004
+  recommended_value: Real-time paging & SIEM alert on break-glass credential usage
+  remediation_notes: Test break-glass alert pipeline during semi-annual IR table-top
+    exercises.
+  severity: CRITICAL
+  status: COMPLIANT

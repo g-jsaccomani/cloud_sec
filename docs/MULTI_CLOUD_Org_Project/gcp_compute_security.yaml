@@ -1,0 +1,49 @@
+cloud_provider: GCP
+count: 4
+domain: compute_security
+items:
+- category: Compute Engine Security
+  control_name: Enforce Shielded VM (Secure Boot & vTPM) on all instances
+  current_value: 12 of 14 VMs have Shielded VM Secure Boot enabled
+  description: All Compute Engine VMs must have Secure Boot, vTPM, and Integrity Monitoring
+    enabled.
+  evidence_source: gcloud compute instances list
+  id: GCP-COMP-001
+  recommended_value: 100% Shielded VMs with Secure Boot = True
+  remediation_notes: Enable Secure Boot on legacy instances 'vm-legacy-app-1' and
+    'vm-legacy-app-2'.
+  severity: HIGH
+  status: NON_COMPLIANT
+- category: Compute Engine Security
+  control_name: Enforce OS Login for SSH Access Management
+  current_value: enable-oslogin = TRUE at project metadata level
+  description: Project-wide metadata must enable OS Login (enable-oslogin = TRUE)
+    to eliminate static SSH keys.
+  evidence_source: gcloud compute project-info describe
+  id: GCP-COMP-002
+  recommended_value: enable-oslogin = TRUE across all projects
+  remediation_notes: Use OS Login with 2SV for elevated admin access.
+  severity: HIGH
+  status: COMPLIANT
+- category: GKE Kubernetes Security
+  control_name: Enforce GKE Private Cluster & Authorized Networks
+  current_value: Cluster 'prod-gke-01' is Private with Authorized Networks = 10.100.0.0/20
+  description: GKE clusters must be private (no external IP on nodes) with master
+    authorized networks enforced.
+  evidence_source: gcloud container clusters describe
+  id: GCP-COMP-003
+  recommended_value: Private Cluster = True, Control Plane Authorized Networks restricted
+  remediation_notes: Ensure GKE Control Plane authorized networks do not allow 0.0.0.0/0.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: GKE Kubernetes Security
+  control_name: Enforce GKE Workload Identity on all Node Pools
+  current_value: Enabled on cluster 'prod-gke-01' node pools
+  description: GKE workloads must use Workload Identity to interact with GCP APIs
+    without node Service Account impersonation.
+  evidence_source: gcloud container clusters describe --format='value(workloadIdentityConfig)'
+  id: GCP-COMP-004
+  recommended_value: Workload Identity pool enabled on 100% of clusters
+  remediation_notes: Audit pod ServiceAccounts mapped to GCP ServiceAccounts.
+  severity: HIGH
+  status: COMPLIANT

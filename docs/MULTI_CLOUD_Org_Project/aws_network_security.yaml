@@ -1,0 +1,52 @@
+cloud_provider: AWS
+count: 4
+domain: network_security
+items:
+- category: Security Groups
+  control_name: Prohibit Unrestricted SSH (22) and RDP (3389) in Security Groups
+  current_value: Security Group 'sg-01a2b3c' allows 0.0.0.0/0 on port 22
+  description: Security groups must not allow ingress from 0.0.0.0/0 to ports 22 or
+    3389.
+  evidence_source: aws ec2 describe-security-groups
+  id: AWS-NET-001
+  recommended_value: No security groups allow 0.0.0.0/0 on SSH/RDP
+  remediation_notes: Revoke 0.0.0.0/0 ingress rule on 'sg-01a2b3c' and use AWS Systems
+    Manager Session Manager.
+  severity: CRITICAL
+  status: NON_COMPLIANT
+- category: Web Application Firewall
+  control_name: Attach AWS WAFv2 Web ACL to CloudFront & ALB Endpoints
+  current_value: Web ACL 'prod-waf-acl' attached with AWSManagedRulesCommonRuleSet
+  description: Public CloudFront distributions and Application Load Balancers must
+    be protected by AWS WAFv2 with managed rules.
+  evidence_source: aws wafv2 list-web-acls
+  id: AWS-NET-002
+  recommended_value: WAFv2 Web ACL attached to 100% of public endpoints
+  remediation_notes: Regularly test WAF rules against OWASP Top 10 automated scanners.
+  severity: HIGH
+  status: COMPLIANT
+- category: VPC Flow Logs
+  control_name: Enable VPC Flow Logs to CloudWatch / S3
+  current_value: Enabled on 5 of 6 VPCs; missing on 'vpc-legacy-test'
+  description: VPC Flow Logs must be enabled for all VPCs to capture IP traffic to/from
+    network interfaces.
+  evidence_source: aws ec2 describe-flow-logs
+  id: AWS-NET-003
+  recommended_value: 100% VPC Flow Log enablement with 10-minute max aggregation interval
+  remediation_notes: Create flow log destination to S3 security archive bucket for
+    'vpc-legacy-test'.
+  severity: MEDIUM
+  status: NON_COMPLIANT
+- category: Network Routing
+  control_name: Enforce Default Deny on VPC Network Access Control Lists (NACLs)
+  current_value: Default allow-all NACLs in use across VPCs
+  description: Custom NACLs must be configured to block known malicious IP blocks
+    and prevent asymmetric routing bypass.
+  evidence_source: aws ec2 describe-network-acls
+  id: AWS-NET-004
+  recommended_value: Hardened subnet NACLs with explicit deny rules for high-risk
+    ports
+  remediation_notes: Review subnet boundaries and implement defense-in-depth NACL
+    rules.
+  severity: LOW
+  status: MANUAL_REVIEW

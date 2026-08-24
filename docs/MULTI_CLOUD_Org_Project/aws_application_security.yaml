@@ -1,0 +1,54 @@
+cloud_provider: AWS
+count: 4
+domain: application_security
+items:
+- category: API Gateway Security
+  control_name: Enforce Cognito / Lambda JWT Authorizers on API Gateway Routes
+  current_value: 100% of REST API routes require Cognito User Pool authorizer
+  description: REST and HTTP API Gateway endpoints must require authentication via
+    AWS Cognito user pools or custom Lambda JWT authorizers.
+  evidence_source: aws apigateway get-authorizers
+  id: AWS-APP-001
+  recommended_value: Mandatory authorizer attached to all published API stages
+  remediation_notes: Ensure API Gateway usage plans enforce strict rate limiting per
+    API key.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Secrets Management
+  control_name: Enforce Automatic Rotation for AWS Secrets Manager Secrets
+  current_value: 14 secrets stored; 3 secrets have automatic rotation disabled
+  description: Database credentials and API keys stored in Secrets Manager must have
+    automatic rotation configured via AWS Lambda.
+  evidence_source: aws secretsmanager list-secrets
+  id: AWS-APP-002
+  recommended_value: Automatic rotation schedule <= 90 days enabled on 100% of secrets
+  remediation_notes: Enable automatic rotation Lambda function for 'db-prod-sql-secret'
+    and 'api-stripe-key'.
+  severity: CRITICAL
+  status: NON_COMPLIANT
+- category: Container Registry Security
+  control_name: Enforce ECR Immutable Image Tags & Amazon Inspector Vulnerability
+    Scanning
+  current_value: 10 of 12 ECR repositories set to IMMUTABLE with Inspector enabled
+  description: Elastic Container Registry (ECR) repositories must enforce imageTagMutability=IMMUTABLE
+    and continuous scanning via Amazon Inspector.
+  evidence_source: aws ecr describe-repositories
+  id: AWS-APP-003
+  recommended_value: 100% ECR repositories IMMUTABLE with Inspector continuous scanning
+  remediation_notes: Update imageTagMutability to IMMUTABLE on 'dev-backend-repo'
+    and 'qa-worker-repo'.
+  severity: HIGH
+  status: NON_COMPLIANT
+- category: Serverless Code Integrity
+  control_name: Enforce AWS Signer Code Signing on Lambda Functions
+  current_value: Code signing configuration 'signer-prod-profile' enforced on 100%
+    of production Lambdas
+  description: Production Lambda functions must require a trusted AWS Signer signing
+    profile to prevent unauthorized code tampering.
+  evidence_source: aws lambda list-code-signing-configs
+  id: AWS-APP-004
+  recommended_value: Mandatory code signing profile attached to Lambda execution environments
+  remediation_notes: Rotate code signing certificates in accordance with enterprise
+    PKI policies.
+  severity: HIGH
+  status: COMPLIANT

@@ -1,0 +1,56 @@
+cloud_provider: AWS
+count: 4
+domain: foundation_landing_zone
+items:
+- category: Control Tower & Guardrails
+  control_name: Enforce AWS Control Tower Landing Zone with Preventive & Detective
+    Guardrails
+  current_value: Control Tower Landing Zone v3.3 active; 14 mandatory and 6 strongly
+    recommended guardrails enabled
+  description: The AWS Organization must be managed by AWS Control Tower with mandatory
+    preventive SCPs and detective AWS Config rules active across all OUs.
+  evidence_source: aws controltower list-enabled-controls
+  id: AWS-LZ-001
+  recommended_value: Control Tower deployed with 100% OU enrollment
+  remediation_notes: Ensure new member accounts are provisioned exclusively via AWS
+    Service Catalog Account Factory.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Account Architecture
+  control_name: Enforce Dedicated Security Log Archive & Audit Accounts
+  current_value: Dedicated 'Log Archive' (998877665544) and 'Security Audit' accounts
+    operational
+  description: Centralized CloudTrail and AWS Config logs must be shipped to a dedicated
+    Log Archive account with restricted IAM access.
+  evidence_source: aws organizations list-accounts
+  id: AWS-LZ-002
+  recommended_value: Dedicated Log Archive & Security Audit accounts with zero workload
+    deployment
+  remediation_notes: Verify SCP blocks root account login on Log Archive account.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Resource Sharing
+  control_name: Restrict AWS Resource Access Manager (RAM) Sharing to Within the Organization
+  current_value: RAM Organization sharing enabled; external sharing disabled
+  description: AWS RAM must prohibit sharing Transit Gateways, Subnets, and Resolver
+    Rules with external AWS accounts outside the organization.
+  evidence_source: aws ram get-resource-share-organizations
+  id: AWS-LZ-003
+  recommended_value: enable-sharing-with-aws-organization = True; external sharing
+    = False
+  remediation_notes: Audit any explicit RAM invitations to third-party vendor accounts.
+  severity: HIGH
+  status: COMPLIANT
+- category: Network Hub
+  control_name: Enforce Centralized Egress via Shared Network Inspection Hub
+  current_value: Transit Gateway hub 'tgw-prod-hub' routing egress through AWS Network
+    Firewall
+  description: VPCs in workload accounts must route outbound Internet egress through
+    a centralized AWS Network Firewall / Transit Gateway hub.
+  evidence_source: aws ec2 describe-transit-gateways
+  id: AWS-LZ-004
+  recommended_value: 100% of workload VPC egress inspected at centralized network
+    hub
+  remediation_notes: Monitor Network Firewall drop metrics and TLS SNI filtering rules.
+  severity: HIGH
+  status: COMPLIANT

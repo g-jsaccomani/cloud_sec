@@ -1,0 +1,53 @@
+cloud_provider: GCP
+count: 4
+domain: foundation_landing_zone
+items:
+- category: Organization Hierarchy
+  control_name: Enforce Google Enterprise Foundations Blueprint Folder Hierarchy
+  current_value: 4 top-level folders configured according to Google Enterprise Blueprint
+  description: 'The GCP Organization must deploy standardized top-level folders: Common,
+    SharedServices, Production, Non-Production, and Sandbox.'
+  evidence_source: gcloud resource-manager folders list --organization=<ORG_ID>
+  id: GCP-LZ-001
+  recommended_value: Standardized 4-tier folder hierarchy with dedicated IAM inheritance
+    boundaries
+  remediation_notes: Prevent creation of ad-hoc root-level projects outside designated
+    folders.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Network Architecture
+  control_name: Enforce Shared VPC Architecture for Centralized Network Management
+  current_value: Shared VPC Host 'proj-net-hub-01' attached to 14 production service
+    projects
+  description: Workload projects must attach to a Shared VPC managed by a centralized
+    networking/security host project.
+  evidence_source: gcloud compute shared-vpc list-associated-resources proj-net-hub-01
+  id: GCP-LZ-002
+  recommended_value: 100% of production workloads reside inside Shared VPC subnets
+  remediation_notes: Review subnet IAM permissions for Service Project admins.
+  severity: HIGH
+  status: COMPLIANT
+- category: VPC Service Controls
+  control_name: Enforce VPC Service Controls (VPC-SC) Perimeters around Sensitive
+    Data Services
+  current_value: VPC-SC Perimeter 'perimeter-prod-core' active in Enforce mode
+  description: VPC Service Controls must prevent data exfiltration by enforcing service
+    perimeters around BigQuery, Cloud Storage, and Cloud SQL.
+  evidence_source: gcloud access-context-manager perimeters list --policy=<POLICY_ID>
+  id: GCP-LZ-003
+  recommended_value: VPC-SC perimeter active across 100% of production projects
+  remediation_notes: Maintain minimal ingress/egress rules using Access Levels.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Billing & Resource Tracking
+  control_name: Centralized Billing Data Export to SecOps BigQuery Dataset
+  current_value: Billing export active -> 'billing_secops_archive.gcp_billing_export_v1'
+  description: Detailed billing and resource usage exports must be routed to an immutable
+    BigQuery dataset for anomaly and cost-abuse detection.
+  evidence_source: gcloud beta billing accounts describe <ACCOUNT_ID>
+  id: GCP-LZ-004
+  recommended_value: Active BigQuery billing export with alert rules for cost spikes
+    > 50%
+  remediation_notes: Monitor anomaly alerts in Cloud Billing budget notifications.
+  severity: MEDIUM
+  status: COMPLIANT

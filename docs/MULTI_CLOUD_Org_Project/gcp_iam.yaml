@@ -1,0 +1,52 @@
+cloud_provider: GCP
+count: 4
+domain: iam
+items:
+- category: Identity & Access Management
+  control_name: Restrict Primitive Role Usage (roles/owner, roles/editor)
+  current_value: 3 users assigned roles/editor, 2 users assigned roles/owner
+  description: Ensure primitive roles (Owner/Editor) are not assigned to standard
+    user accounts.
+  evidence_source: GCP Cloud IAM Policy Export
+  id: GCP-IAM-001
+  recommended_value: 0 users on primitive roles; enforce Least Privilege RBAC
+  remediation_notes: Migrate users from roles/editor to domain-specific roles (e.g.,
+    roles/storage.objectViewer, roles/compute.instanceAdmin).
+  severity: HIGH
+  status: NON_COMPLIANT
+- category: Service Account Security
+  control_name: Service Account Key Expiration & Rotation
+  current_value: 2 Service Account keys > 120 days old detected
+  description: User-managed service account keys older than 90 days must be disabled
+    and rotated.
+  evidence_source: gcloud iam service-accounts keys list
+  id: GCP-IAM-002
+  recommended_value: No user-managed keys > 90 days; prefer Workload Identity Federation
+  remediation_notes: Adopt GKE Workload Identity or OIDC Federation to eliminate long-lived
+    Service Account JSON keys.
+  severity: CRITICAL
+  status: NON_COMPLIANT
+- category: Authentication & SSO
+  control_name: Enforce 2SV / MFA in Cloud Identity
+  current_value: 2SV Enforced for 95% of users (2 exceptions)
+  description: All human administrators and users must have 2-Step Verification (MFA)
+    enforced.
+  evidence_source: Google Admin SDK / Cloud Security Command Center
+  id: GCP-IAM-003
+  recommended_value: 100% 2SV enforcement across all org units
+  remediation_notes: Enable mandatory 2SV in Google Cloud Identity / Workspace admin
+    console.
+  severity: CRITICAL
+  status: NON_COMPLIANT
+- category: Workload Federation
+  control_name: Workload Identity Federation for External CI/CD
+  current_value: Workload Identity Pool 'github-actions-pool' configured
+  description: Use Workload Identity Federation instead of static JSON keys for GitHub
+    Actions / GitLab CI.
+  evidence_source: gcloud iam workload-identity-pools list
+  id: GCP-IAM-004
+  recommended_value: 100% of CI/CD pipelines use WIF without stored credentials
+  remediation_notes: Maintain pool attribute conditions to restrict access to specific
+    GitHub repos.
+  severity: MEDIUM
+  status: COMPLIANT

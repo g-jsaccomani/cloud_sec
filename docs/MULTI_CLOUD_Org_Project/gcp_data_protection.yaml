@@ -1,0 +1,49 @@
+cloud_provider: GCP
+count: 4
+domain: data_protection
+items:
+- category: Cloud Storage Security
+  control_name: Enforce Public Access Prevention (PAP) on GCS Buckets
+  current_value: 2 buckets with Public Access Prevention set to 'unspecified'
+  description: All Cloud Storage buckets must have Public Access Prevention set to
+    'enforced'.
+  evidence_source: gcloud storage buckets describe
+  id: GCP-DATA-001
+  recommended_value: Public Access Prevention = 'enforced' across 100% of buckets
+  remediation_notes: Run 'gcloud storage buckets update gs://<bucket> --public-access-prevention=enforced'.
+  severity: CRITICAL
+  status: NON_COMPLIANT
+- category: Cloud Storage Security
+  control_name: Enforce Uniform Bucket-Level Access (UBLA)
+  current_value: UBLA Enabled on 100% of buckets
+  description: Prevent object-level ACLs by enforcing Uniform Bucket-Level Access.
+  evidence_source: gcloud storage buckets list
+  id: GCP-DATA-002
+  recommended_value: Uniform Bucket-Level Access = True
+  remediation_notes: Maintain org policy constraint 'storage.uniformBucketLevelAccess'.
+  severity: HIGH
+  status: COMPLIANT
+- category: Key Management (CMEK)
+  control_name: Customer-Managed Encryption Keys (CMEK) for Sensitive Datasets
+  current_value: CMEK configured for BigQuery analytics; default Google encryption
+    on Cloud SQL dev
+  description: BigQuery datasets and Cloud SQL instances containing PII/PCI must use
+    Cloud KMS CMEK.
+  evidence_source: gcloud kms keys list / Cloud SQL describe
+  id: GCP-DATA-003
+  recommended_value: CMEK enforced for Production Cloud SQL, BigQuery, and GCS buckets
+  remediation_notes: Verify KMS key rotation period is set to <= 90 days and separation
+    of duties is maintained.
+  severity: HIGH
+  status: MANUAL_REVIEW
+- category: Database Security
+  control_name: Enforce SSL/TLS Connections on Cloud SQL Instances
+  current_value: SSL required on 4 of 4 Cloud SQL instances
+  description: Cloud SQL instances must reject unencrypted connections (require_ssl
+    = true).
+  evidence_source: gcloud sql instances describe
+  id: GCP-DATA-004
+  recommended_value: require_ssl = true
+  remediation_notes: Ensure client certificates are rotated annually.
+  severity: HIGH
+  status: COMPLIANT

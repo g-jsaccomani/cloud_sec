@@ -1,0 +1,51 @@
+cloud_provider: AZURE
+count: 4
+domain: logging_monitoring
+items:
+- category: Defender for Cloud
+  control_name: Enable Microsoft Defender for Cloud on All Key Resource Types
+  current_value: Servers, Storage, and Kubernetes enabled; Key Vault plan set to 'Free'
+  description: Defender for Cloud plans must be set to 'Standard' / enabled for Servers,
+    Kubernetes, Storage, Key Vault, and SQL.
+  evidence_source: az security pricing list
+  id: AZURE-LOG-001
+  recommended_value: Standard Defender plan active across all supported resource types
+  remediation_notes: Enable Microsoft Defender for Key Vault to detect unusual cryptographic
+    operations.
+  severity: HIGH
+  status: NON_COMPLIANT
+- category: Activity Logging
+  control_name: Export Azure Activity Log to Log Analytics & Event Hub SIEM
+  current_value: Diagnostic setting 'export-to-siem' active on 100% of subscriptions
+  description: Subscription Activity Logs (Administrative, Security, ServiceHealth,
+    Alert) must export to a central Log Analytics workspace.
+  evidence_source: az monitor diagnostic-settings list
+  id: AZURE-LOG-002
+  recommended_value: Continuous Activity Log export active with >= 365 days retention
+  remediation_notes: Monitor Event Hub ingestion pipeline for SIEM connectivity.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Log Retention
+  control_name: Enforce Minimum 365-Day Retention on Security Log Analytics Workspace
+  current_value: Workspace 'law-secops-central' retention = 365 days
+  description: The central security Log Analytics workspace must retain audit telemetry
+    for at least 1 year.
+  evidence_source: az monitor log-analytics workspace show
+  id: AZURE-LOG-003
+  recommended_value: retentionInDays >= 365
+  remediation_notes: Use Azure Monitor Archive Logs for long-term multi-year compliance
+    retention.
+  severity: MEDIUM
+  status: COMPLIANT
+- category: Alerting
+  control_name: Configure Security Alert Notifications for Subscription Admins
+  current_value: Alert notifications enabled for 'secops@domain.com'
+  description: Microsoft Defender for Cloud must be configured to send high/critical
+    security alerts to subscription owners and security email contacts.
+  evidence_source: az security contact list
+  id: AZURE-LOG-004
+  recommended_value: High/Critical alerts emailed to Security Operations & Subscription
+    Owners
+  remediation_notes: Test alert notification email routing quarterly.
+  severity: HIGH
+  status: COMPLIANT

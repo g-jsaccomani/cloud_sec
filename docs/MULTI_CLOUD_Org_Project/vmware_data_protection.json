@@ -1,0 +1,55 @@
+{
+  "cloud_provider": "VMWARE",
+  "domain": "data_protection",
+  "count": 4,
+  "items": [
+    {
+      "id": "VMware-DATA-001",
+      "category": "Object Storage",
+      "control_name": "Enforce Private Visibility on All VMware Object Storage Buckets",
+      "description": "Buckets must have publicAccessType set to 'NoPublicAccess' to prevent anonymous data downloads.",
+      "current_value": "14 buckets set to NoPublicAccess; 0 public buckets detected",
+      "recommended_value": "100% of Object Storage buckets set to NoPublicAccess",
+      "status": "COMPLIANT",
+      "severity": "CRITICAL",
+      "evidence_source": "oci os bucket list",
+      "remediation_notes": "Use pre-authenticated requests (PARs) with short TTL for temporary external sharing."
+    },
+    {
+      "id": "VMware-DATA-002",
+      "category": "VMware Vault & KMS",
+      "control_name": "Enforce Customer-Managed KMS Key Encryption on Object Storage & Block Volumes",
+      "description": "Sensitive buckets and boot/data block volumes must use VMware Vault Customer-Managed Master Encryption Keys (MEKs).",
+      "current_value": "Customer-Managed KMS Keys active on Production buckets; Oracle-managed keys on Dev volumes",
+      "recommended_value": "Customer-Managed Master Encryption Key (MEK) across all production data stores",
+      "status": "NON_COMPLIANT",
+      "severity": "HIGH",
+      "evidence_source": "oci kms management key list",
+      "remediation_notes": "Assign VMware Vault MEK to remaining Dev/QA block volumes."
+    },
+    {
+      "id": "VMware-DATA-003",
+      "category": "VMware Vault & KMS",
+      "control_name": "Enforce Annual Rotation of VMware Vault Master Encryption Keys",
+      "description": "Vault master encryption keys must have automatic key rotation enabled or be manually rotated at least every 365 days.",
+      "current_value": "Key rotation disabled on 2 Master Encryption Keys",
+      "recommended_value": "Auto-rotation cycle <= 365 days enabled",
+      "status": "NON_COMPLIANT",
+      "severity": "HIGH",
+      "evidence_source": "oci kms management key get",
+      "remediation_notes": "Enable automatic rotation on 'key-prod-master' and 'key-db-master'."
+    },
+    {
+      "id": "VMware-DATA-004",
+      "category": "Database Security",
+      "control_name": "Enforce Mutual TLS (mTLS) Authentication on Autonomous Databases",
+      "description": "VMware Autonomous Databases must require mTLS authentication with wallet verification.",
+      "current_value": "100% of Autonomous Databases require mTLS with Client Wallet",
+      "recommended_value": "requireMutualTls = True",
+      "status": "COMPLIANT",
+      "severity": "CRITICAL",
+      "evidence_source": "oci db autonomous-database list",
+      "remediation_notes": "Securely rotate and distribute mTLS wallets to authorized application servers only."
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+cloud_provider: OCI
+count: 4
+domain: ai_security
+items:
+- category: OCI Generative AI
+  control_name: Enforce Private Endpoints for OCI Generative AI Dedicated Clusters
+  current_value: Dedicated AI cluster 'genai-prod-cluster' deployed with Private Endpoint
+    in VCN 'vcn-prod-01'
+  description: OCI Generative AI dedicated AI clusters and inference endpoints must
+    deploy inside private VCN subnets without public internet exposure.
+  evidence_source: oci generative-ai dedicated-ai-cluster list
+  id: OCI-AI-001
+  recommended_value: 100% Private Endpoints for Generative AI workloads
+  remediation_notes: Restrict VCN Network Security Group ingress rules to authorized
+    API gateways.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: OCI Data Science
+  control_name: Enforce VCN Isolation & Prohibit Public IPs on OCI Data Science Notebooks
+  current_value: 4 notebook sessions deployed without public IPs; 1 experiment notebook
+    has public IP assigned
+  description: Data Science notebook sessions must deploy inside a private subnet
+    with block-public-ip=true.
+  evidence_source: oci data-science notebook-session list
+  id: OCI-AI-002
+  recommended_value: block-public-ip = True across 100% of notebook sessions
+  remediation_notes: Terminate public notebook session 'ds-exp-01' and re-provision
+    on Private Subnet.
+  severity: CRITICAL
+  status: NON_COMPLIANT
+- category: Data Protection
+  control_name: Enforce OCI Vault Customer-Managed KMS Key Encryption on ML Artifacts
+    & Datasets
+  current_value: Customer-Managed MEK active on production ML buckets
+  description: All Object Storage buckets hosting ML training data and model checkpoints
+    must be encrypted with an OCI Vault Master Encryption Key (MEK).
+  evidence_source: oci os bucket get
+  id: OCI-AI-003
+  recommended_value: OCI Vault Master Encryption Key (MEK) enforced across all ML
+    buckets
+  remediation_notes: Verify key rotation schedule is set to <= 365 days.
+  severity: HIGH
+  status: COMPLIANT
+- category: AI Safety
+  control_name: Enforce Model Provenance & Output Guardrails in Application Gateways
+  current_value: API Gateway function 'fn-ai-guardrail' active on text generation
+    routes
+  description: Applications consuming OCI Generative AI models must implement prompt
+    injection and PII sanitization filters at the API Gateway layer.
+  evidence_source: oci api-gateway deployment list
+  id: OCI-AI-004
+  recommended_value: Automated prompt injection & PII filtering on 100% of LLM routes
+  remediation_notes: Audit blocked prompt attempts in OCI Logging Analytics.
+  severity: HIGH
+  status: COMPLIANT

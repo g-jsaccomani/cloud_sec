@@ -1,0 +1,55 @@
+cloud_provider: AZURE
+count: 4
+domain: application_security
+items:
+- category: API Management
+  control_name: Enforce OAuth2 / OpenID Connect Authorization on Azure API Management
+    (APIM)
+  current_value: 100% of APIM APIs enforce 'validate-jwt' policy with Entra ID tenant
+    validation
+  description: APIM policies must validate OAuth2 access tokens or OpenID Connect
+    signatures before forwarding traffic to backend APIs.
+  evidence_source: az apim api policy list
+  id: AZURE-APP-001
+  recommended_value: Mandatory OAuth2/JWT validation policy applied at global APIM
+    scope
+  remediation_notes: Ensure APIM rate-limit and quota-by-key policies are active.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Secrets Management
+  control_name: Enforce Automated Rotation & Expiration Dates on Key Vault Secrets
+  current_value: 15 secrets have expiration date; 3 secrets lack expiration date or
+    rotation
+  description: All Key Vault secrets and certificates must define an expiration date
+    and use Azure Event Grid automation for 90-day rotation.
+  evidence_source: az keyvault secret list
+  id: AZURE-APP-002
+  recommended_value: 100% of secrets set expiration date and rotation policy
+  remediation_notes: Set expiration dates on legacy secrets in 'kv-app-core'.
+  severity: CRITICAL
+  status: NON_COMPLIANT
+- category: Container Registry Security
+  control_name: Enable Defender for Containers Vulnerability Scanning on Azure Container
+    Registry (ACR)
+  current_value: Defender for Containers active on 'acrprodregistry01'; 0 critical
+    CVEs found
+  description: ACR registries must have Defender for Containers enabled to scan container
+    images for vulnerabilities upon push and continuously.
+  evidence_source: az security pricing show --name ContainerRegistry
+  id: AZURE-APP-003
+  recommended_value: Defender for Containers enabled across 100% of ACR instances
+  remediation_notes: Integrate scan results into Azure DevOps build gates.
+  severity: HIGH
+  status: COMPLIANT
+- category: PaaS Network Isolation
+  control_name: Enforce VNet Integration and Private Endpoints on Azure App Services
+  current_value: 12 App Services use Private Endpoints; 2 Dev apps exposed on public
+    IPs
+  description: App Services and Functions must enable VNet Integration for outbound
+    traffic and disable public network access in favor of Private Endpoints.
+  evidence_source: az webapp list
+  id: AZURE-APP-004
+  recommended_value: 100% Private Endpoints; Public Network Access = Disabled
+  remediation_notes: Configure Private Endpoints for 'app-dev-test-1' and 'app-dev-test-2'.
+  severity: HIGH
+  status: NON_COMPLIANT

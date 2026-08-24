@@ -1,0 +1,54 @@
+cloud_provider: AZURE
+count: 4
+domain: iam
+items:
+- category: Microsoft Entra ID Security
+  control_name: 'Enforce Conditional Access Policy: MFA for All Administrators'
+  current_value: Policy 'CA-Require-MFA-Admins' active; 1 break-glass account exempted
+  description: Entra ID Conditional Access must enforce phishing-resistant MFA for
+    all administrative roles.
+  evidence_source: az ad policy conditional-access policy list
+  id: AZURE-IAM-001
+  recommended_value: MFA enforced on 100% of admin roles with monitored break-glass
+    exceptions
+  remediation_notes: Regularly test alert triggering on break-glass emergency account
+    sign-ins.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Privileged Identity Management (PIM)
+  control_name: Enforce Just-in-Time (JIT) Activation for Subscription Owner/Contributor
+    Roles
+  current_value: 3 permanent Subscription Owner assignments detected
+  description: No permanent Owner or Contributor assignments; administrators must
+    activate access via PIM with ticket approval.
+  evidence_source: az role assignment list --role Owner
+  id: AZURE-IAM-002
+  recommended_value: 0 permanent Owner assignments; enforce PIM JIT activation
+  remediation_notes: Convert permanent Owner assignments to Eligible PIM assignments
+    with 8-hour max duration.
+  severity: HIGH
+  status: NON_COMPLIANT
+- category: Legacy Authentication
+  control_name: Block Legacy Authentication Protocols in Entra ID
+  current_value: Policy 'CA-Block-Legacy-Auth' enabled in Report-Only mode
+  description: Conditional Access policy must explicitly block legacy protocols (POP,
+    IMAP, SMTP Auth, older Office clients).
+  evidence_source: az rest --method get --url https://graph.microsoft.com/v1.0/identity/conditionalAccess/policies
+  id: AZURE-IAM-003
+  recommended_value: Policy enabled in Enforce mode
+  remediation_notes: Switch 'CA-Block-Legacy-Auth' state from 'reportOnly' to 'enabled'.
+  severity: CRITICAL
+  status: NON_COMPLIANT
+- category: Service Principals & Identities
+  control_name: Enforce Managed Identities over Client Secrets for Azure Resources
+  current_value: 85% of services use Managed Identities; 3 App Services use client
+    secrets
+  description: Azure VMs, App Services, and Functions must use User-Assigned or System-Assigned
+    Managed Identities instead of client secrets.
+  evidence_source: az identity list
+  id: AZURE-IAM-004
+  recommended_value: 100% adoption of Managed Identities for intra-Azure service authentication
+  remediation_notes: Migrate legacy App Service database connections to Managed Identity
+    with Entra Auth.
+  severity: MEDIUM
+  status: NON_COMPLIANT

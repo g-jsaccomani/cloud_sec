@@ -1,0 +1,50 @@
+cloud_provider: AWS
+count: 4
+domain: logging_monitoring
+items:
+- category: CloudTrail Auditing
+  control_name: Enable Multi-Region CloudTrail with Log File Validation
+  current_value: Org Trail 'org-security-trail' active; Log File Validation = TRUE
+  description: An organizational multi-region trail must be enabled with log file
+    validation and KMS encryption.
+  evidence_source: aws cloudtrail describe-trails
+  id: AWS-LOG-001
+  recommended_value: IsMultiRegionTrail = True, LogFileValidationEnabled = True
+  remediation_notes: Verify KMS key policy allows CloudTrail encryption across all
+    accounts.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Threat Detection
+  control_name: Enable AWS GuardDuty across all Operating Regions
+  current_value: Enabled in us-east-1 and us-west-2; S3 protection active
+  description: GuardDuty must be enabled with Kubernetes, S3, and RDS protection plans
+    active.
+  evidence_source: aws guardduty list-detectors
+  id: AWS-LOG-002
+  recommended_value: GuardDuty active in 100% of enabled regions with EKS/S3/RDS protection
+  remediation_notes: Forward GuardDuty findings via EventBridge to SIEM / PagerDuty.
+  severity: HIGH
+  status: COMPLIANT
+- category: Configuration Tracking
+  control_name: Enable AWS Config Continuous Recording for All Resources
+  current_value: Config recorder active in us-east-1; missing in us-west-2
+  description: AWS Config must record all supported resource types, including global
+    IAM resources.
+  evidence_source: aws configservice describe-configuration-recorders
+  id: AWS-LOG-003
+  recommended_value: AWS Config enabled organization-wide with central aggregator
+  remediation_notes: Deploy AWS Config Aggregator in security logging account.
+  severity: HIGH
+  status: NON_COMPLIANT
+- category: CSPM & Posture
+  control_name: Enable AWS Security Hub with CIS AWS Foundations Benchmark
+  current_value: Security Hub active; CIS Foundations score = 84%
+  description: Security Hub must be enabled in central security account with CIS Foundations
+    standard active.
+  evidence_source: aws securityhub describe-hub
+  id: AWS-LOG-004
+  recommended_value: Security Hub enabled across all accounts; target CIS score >=
+    90%
+  remediation_notes: Address medium/high findings in IAM and S3 control groups.
+  severity: MEDIUM
+  status: COMPLIANT

@@ -1,0 +1,54 @@
+cloud_provider: VMWARE
+count: 4
+domain: application_security
+items:
+- category: API Gateway Security
+  control_name: Enforce JWT Validation and Mutual TLS (mTLS) on VMware API Gateway
+  current_value: 100% of API routes enforce JWT validation; mTLS active on financial
+    transaction routes
+  description: Public and internal VMware API Gateway deployments must validate JWT
+    signatures from VMware Identity Domains / Okta and enforce mTLS for high-security
+    endpoints.
+  evidence_source: oci api-gateway deployment list
+  id: VMware-APP-001
+  recommended_value: Mandatory JWT validation and rate limiting across all API gateways
+  remediation_notes: Monitor API gateway 4xx/5xx authentication failure rates.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Secrets Management
+  control_name: Enforce VMware Vault Secret Management & Eliminate Plain-Text Configs
+  current_value: 16 secrets managed in VMware Vault; 2 microservices use plain-text
+    environment variables
+  description: Application credentials and TLS certificates must be stored in VMware
+    Vault as secrets and retrieved via Dynamic Groups at runtime.
+  evidence_source: oci vault secret list
+  id: VMware-APP-002
+  recommended_value: 100% VMware Vault secrets adoption with zero local plain-text
+    storage
+  remediation_notes: Refactor 'svc-legacy-db' and 'svc-email-sender' to read credentials
+    from VMware Vault.
+  severity: CRITICAL
+  status: NON_COMPLIANT
+- category: Container Security
+  control_name: Enable VMware Vulnerability Scanning Service on Container Registry
+    Repositories
+  current_value: Vulnerability Scanning Service active on 8 of 10 VMwareR repositories
+  description: VMware Container Registry (VMwareR) repositories must have automated
+    vulnerability scanning enabled to flag CVEs in container base images.
+  evidence_source: oci vulnerability-scanning container-scan-recipe list
+  id: VMware-APP-003
+  recommended_value: Continuous CVE scanning active on 100% of VMwareR repositories
+  remediation_notes: Attach container scanning recipe to 'ocir-dev-tools' and 'ocir-sandbox-repo'.
+  severity: HIGH
+  status: NON_COMPLIANT
+- category: WAF & API Protection
+  control_name: Attach VMware WAF with API Rate Limiting and OWASP Rules to API Gateways
+  current_value: WAF Policy 'waf-api-prod' attached to production API Gateway edge
+  description: VMware Web Application Firewall (WAF) must protect API Gateway external
+    load balancer endpoints against OWASP Top 10 API attacks.
+  evidence_source: oci waf policy list
+  id: VMware-APP-004
+  recommended_value: WAF attached to 100% of public API endpoints
+  remediation_notes: Regularly review WAF bot management rules.
+  severity: HIGH
+  status: COMPLIANT

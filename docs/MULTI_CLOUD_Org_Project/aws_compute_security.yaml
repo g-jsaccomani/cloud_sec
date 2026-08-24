@@ -1,0 +1,52 @@
+cloud_provider: AWS
+count: 4
+domain: compute_security
+items:
+- category: EC2 Compute Security
+  control_name: Enforce IMDSv2 (Instance Metadata Service v2) on EC2 Instances
+  current_value: 18 of 20 EC2 instances require IMDSv2; 2 allow IMDSv1
+  description: EC2 instances must require IMDSv2 (HttpTokens=required) to mitigate
+    SSRF attack vectors.
+  evidence_source: aws ec2 describe-instances
+  id: AWS-COMP-001
+  recommended_value: 100% of instances require IMDSv2 (HttpTokens = 'required')
+  remediation_notes: Run 'aws ec2 modify-instance-metadata-options --instance-id <ID>
+    --http-tokens required'.
+  severity: CRITICAL
+  status: NON_COMPLIANT
+- category: EKS Kubernetes Security
+  control_name: Restrict EKS Control Plane Public Endpoint Access
+  current_value: Cluster 'prod-eks-01' has PrivateAccess=True and PublicAccess=False
+  description: EKS cluster API endpoints must be private or restricted to authorized
+    enterprise CIDRs.
+  evidence_source: aws eks describe-cluster
+  id: AWS-COMP-002
+  recommended_value: endpointPrivateAccess = True, endpointPublicAccess = False
+  remediation_notes: Ensure worker node security groups allow HTTPS only from control
+    plane ENIs.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: EKS Kubernetes Security
+  control_name: Enforce IAM Roles for Service Accounts (IRSA)
+  current_value: OIDC provider configured; 100% of pods use IRSA annotations
+  description: EKS workloads must use OIDC federated IRSA rather than node IAM role
+    permissions.
+  evidence_source: aws eks describe-cluster (identity.oidc)
+  id: AWS-COMP-003
+  recommended_value: All pods adopt IRSA; Node IAM roles stripped of application permissions
+  remediation_notes: Audit IAM trust policies on IRSA execution roles.
+  severity: HIGH
+  status: COMPLIANT
+- category: Serverless Security
+  control_name: Enforce VPC Attachment for Sensitive Lambda Functions
+  current_value: All backend Lambda functions attached to private subnets with NAT
+    Gateway
+  description: Lambda functions accessing internal databases or Redis must execute
+    within private VPC subnets.
+  evidence_source: aws lambda list-functions
+  id: AWS-COMP-004
+  recommended_value: VpcConfig defined for internal-facing serverless functions
+  remediation_notes: Ensure Lambda execution roles do not contain wildcard resource
+    permissions.
+  severity: MEDIUM
+  status: COMPLIANT

@@ -1,0 +1,52 @@
+cloud_provider: GCP
+count: 4
+domain: network_security
+items:
+- category: Firewall Rules
+  control_name: Restrict SSH/RDP from 0.0.0.0/0
+  current_value: Rule 'allow-all-ssh' allows 0.0.0.0/0:22
+  description: Ensure no ingress firewall rule allows SSH (22) or RDP (3389) from
+    the public Internet.
+  evidence_source: gcloud compute firewall-rules list
+  id: GCP-NET-001
+  recommended_value: 'Restrict SSH/RDP to IAP (Identity-Aware Proxy) CIDR: 35.235.240.0/20'
+  remediation_notes: Delete 'allow-all-ssh' rule and mandate Cloud IAP TCP forwarding
+    for remote administration.
+  severity: CRITICAL
+  status: NON_COMPLIANT
+- category: WAF / Cloud Armor
+  control_name: Cloud Armor OWASP Top 10 Protection on Global Load Balancers
+  current_value: Policy 'prod-edge-armor' attached with OWASP SQLi/XSS prevention
+    enabled
+  description: External HTTPS load balancers must have Cloud Armor policies attached
+    with OWASP rulesets.
+  evidence_source: gcloud compute security-policies list
+  id: GCP-NET-002
+  recommended_value: Cloud Armor policy attached to all public backend services
+  remediation_notes: Continue monitoring Cloud Armor rate limiting and bot management
+    telemetry.
+  severity: HIGH
+  status: COMPLIANT
+- category: Encryption in Transit
+  control_name: Enforce TLS 1.2+ minimum on SSL Policies
+  current_value: SSL Policy 'modern-tls-12' enforced (RESTRICTED profile)
+  description: Load balancers must use SSL policies that prohibit TLS 1.0/1.1 and
+    insecure ciphers.
+  evidence_source: gcloud compute ssl-policies list
+  id: GCP-NET-003
+  recommended_value: Min TLS 1.2, MODERN or RESTRICTED cipher profile
+  remediation_notes: Regularly audit SSL certificate expiry and ensure managed HTTPS
+    certificates are used.
+  severity: HIGH
+  status: COMPLIANT
+- category: Private Access
+  control_name: Enable Private Google Access on VPC Subnets
+  current_value: Enabled on 8 of 10 VPC subnets
+  description: Subnets without external IPs must have Private Google Access enabled
+    to reach GCP APIs securely.
+  evidence_source: gcloud compute networks subnets list
+  id: GCP-NET-004
+  recommended_value: Enabled on 100% of internal/workload subnets
+  remediation_notes: Enable Private Google Access on 'subnet-dev-us-east1' and 'subnet-qa-eu-west1'.
+  severity: MEDIUM
+  status: NON_COMPLIANT

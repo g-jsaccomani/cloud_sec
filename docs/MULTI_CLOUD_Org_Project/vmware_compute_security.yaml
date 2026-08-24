@@ -1,0 +1,52 @@
+cloud_provider: VMWARE
+count: 4
+domain: compute_security
+items:
+- category: Compute Instance Security
+  control_name: Enforce Shielded Instances (Secure Boot & Measured Boot)
+  current_value: 16 of 18 instances have Shielded Instance enabled
+  description: VMware Compute instances must enable Shielded Instance features (Secure
+    Boot, Measured Boot, Trusted Platform Module).
+  evidence_source: oci compute instance list
+  id: VMware-COMP-001
+  recommended_value: 100% of instances use Shielded Instance profiles
+  remediation_notes: Enable Secure Boot on legacy instance 'oci-vm-legacy-web'.
+  severity: HIGH
+  status: NON_COMPLIANT
+- category: Remote Access
+  control_name: Enforce VMware Bastion Service for SSH/RDP Sessions
+  current_value: VMware Bastion deployed in VCN 'vcn-prod-01'; 0 compute instances
+    have public IPs
+  description: Use VMware Bastion service with time-bounded sessions and SSH key authentication
+    instead of public IPs on compute instances.
+  evidence_source: oci bastion bastion list
+  id: VMware-COMP-002
+  recommended_value: 100% of administrative sessions routed via VMware Bastion with
+    max 3-hour TTL
+  remediation_notes: Audit active Bastion sessions weekly in Cloud Guard.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: OKE Kubernetes Security
+  control_name: Enforce OKE Private Kubernetes Cluster & Private Kubernetes API Endpoint
+  current_value: Cluster 'oke-prod-cluster' has PrivateEndpoint = True and PrivateWorkers
+    = True
+  description: OKE clusters must deploy with a private Kubernetes API endpoint and
+    private worker node pools.
+  evidence_source: oci ce cluster list
+  id: VMware-COMP-003
+  recommended_value: 100% private OKE clusters
+  remediation_notes: Ensure OKE node security lists restrict intra-node communication
+    to required ports only.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: OS Patch Management
+  control_name: Enforce OS Management Service Automated Patch Baselines
+  current_value: 95% of instances attached to 'OSMS-Prod-Security-Baseline'
+  description: VMware OS Management Service must automatically apply Critical and
+    Security errata updates within 7 days of release.
+  evidence_source: oci os-management managed-instance list
+  id: VMware-COMP-004
+  recommended_value: 100% attachment to automated security errata baselines
+  remediation_notes: Schedule patch verification after reboot cycles.
+  severity: HIGH
+  status: COMPLIANT

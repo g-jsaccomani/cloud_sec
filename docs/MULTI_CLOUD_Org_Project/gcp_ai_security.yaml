@@ -1,0 +1,54 @@
+cloud_provider: GCP
+count: 4
+domain: ai_security
+items:
+- category: Vertex AI Networking
+  control_name: Enforce Private Service Connect (PSC) / Private Endpoints for Vertex
+    AI
+  current_value: All 6 Vertex AI Workbench instances deployed on Private Subnet with
+    PSC
+  description: Vertex AI Workbench notebooks and training pipelines must not expose
+    public IPs and must communicate over Private Service Connect.
+  evidence_source: gcloud ai workbench instances list
+  id: GCP-AI-001
+  recommended_value: 100% Private Endpoints; 0 Public IPs on ML instances
+  remediation_notes: Ensure VPC Service Controls perimeter protects 'aiplatform.googleapis.com'.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Model & Data Protection
+  control_name: Enforce Customer-Managed Encryption Keys (CMEK) on Vertex AI Datasets
+    and Models
+  current_value: CMEK configured on production Vertex AI datasets; default Google
+    encryption on experiment cache
+  description: Training datasets, custom fine-tuned models, and inference caches must
+    use Cloud KMS CMEK.
+  evidence_source: gcloud ai datasets list
+  id: GCP-AI-002
+  recommended_value: CMEK enforced across 100% of ML datasets and model registries
+  remediation_notes: Configure Cloud KMS CryptoKey binding for Vertex AI service agent.
+  severity: HIGH
+  status: NON_COMPLIANT
+- category: GenAI Governance & Safety
+  control_name: Enable Model Armor / LLM Guardrails against Prompt Injection & PII
+    Leakage
+  current_value: Model Armor policy 'prod-llm-guard' active with PII masking and prompt
+    injection detection
+  description: Generative AI applications using Gemini/Vertex AI must implement Model
+    Armor policies to filter prompt injection, jailbreaks, and PII output.
+  evidence_source: gcloud ai model-armor policies list
+  id: GCP-AI-003
+  recommended_value: Model Armor attached to all customer-facing LLM endpoints
+  remediation_notes: Regularly test adversarial prompts against AI safety filters.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Data Sovereignty
+  control_name: Enforce Region Restriction on Vertex AI Data Processing & Training
+  current_value: Region restricted to 'us-central1' via Organization Policy
+  description: All Vertex AI inference and model fine-tuning must execute within approved
+    organizational regions (e.g., us-central1) to maintain data residency.
+  evidence_source: gcloud resource-manager org-policies describe gcp.resourceLocations
+  id: GCP-AI-004
+  recommended_value: Restrict processing to authorized data residency regions
+  remediation_notes: Audit audit logs for unauthorized multi-region ML API invocations.
+  severity: HIGH
+  status: COMPLIANT

@@ -1,0 +1,51 @@
+cloud_provider: GCP
+count: 4
+domain: compliance_governance
+items:
+- category: Organization Policies
+  control_name: Enforce Resource Location Restrictions (gcp.resourceLocations)
+  current_value: 'Allowed regions: [''in:us-locations'']'
+  description: Restrict GCP resource creation to approved organizational regions (e.g.,
+    us-east1, us-central1).
+  evidence_source: gcloud resource-manager org-policies list --organization=<ORG_ID>
+  id: GCP-GOV-001
+  recommended_value: Restrict to authorized data sovereignty regions
+  remediation_notes: Maintain strict exception approval workflow for international
+    regions.
+  severity: HIGH
+  status: COMPLIANT
+- category: Organization Policies
+  control_name: Disable Service Account Key Creation (iam.disableServiceAccountKeyCreation)
+  current_value: Enforced at Organization root
+  description: Prevent developers from creating new user-managed Service Account JSON
+    keys.
+  evidence_source: gcloud resource-manager org-policies describe iam.disableServiceAccountKeyCreation
+  id: GCP-GOV-002
+  recommended_value: Enforced = True across 100% of folders
+  remediation_notes: Ensure no project overrides exist without CISO exception ticket.
+  severity: CRITICAL
+  status: COMPLIANT
+- category: Essential Contacts
+  control_name: Configure Security Essential Contacts at Organization Root
+  current_value: 'Configured: secops-alerts@google.com'
+  description: Ensure 'SECURITY' notification category has verified security operations
+    email addresses.
+  evidence_source: gcloud essential-contacts list --organization=<ORG_ID>
+  id: GCP-GOV-003
+  recommended_value: Verified SOC/Security distribution list assigned to SECURITY
+    category
+  remediation_notes: Test incident alert delivery quarterly.
+  severity: MEDIUM
+  status: COMPLIANT
+- category: Asset Inventory
+  control_name: Cloud Asset Inventory Real-time Export Feed to BigQuery
+  current_value: Feed 'cai-secops-feed' exporting to BigQuery dataset 'cai_audit_archive'
+  description: A continuous Cloud Asset Inventory feed must be configured to export
+    resource changes to BigQuery for audit trails.
+  evidence_source: gcloud asset feeds list --organization=<ORG_ID>
+  id: GCP-GOV-004
+  recommended_value: Active Org-level real-time asset feed
+  remediation_notes: Monitor BigQuery dataset permissions to prevent unauthorized
+    schema changes.
+  severity: MEDIUM
+  status: COMPLIANT
