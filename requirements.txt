@@ -6,7 +6,7 @@ pyyaml>=6.0.1
 rich>=13.7.0
 
 # Google Cloud Platform (GCP)
-google-cloud-resourcemanager>=1.12.0
+google-cloud-resource-manager>=1.12.0
 google-cloud-iam>=2.14.0
 google-cloud-storage>=2.16.0
 google-cloud-asset>=3.18.0
